@@ -43,17 +43,22 @@ h2{font-size:clamp(14px,4vw,20px)}
 .statistik dt{color:var(--bingkai)} .statistik dd{margin:0;font-weight:600;text-align:right}
 
 /* ====== LAYAR GAME + HUD ====== */
-#game-screen{height:100%;display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px;max-width:1100px;margin:0 auto}
-.hud{width:100%;display:flex;justify-content:space-between;gap:6px;flex:none}
+#game-screen{height:100%;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:6px;box-sizing:border-box}
+.hud{width:100%;max-width:min(100%,calc(100dvh - 58px));display:flex;justify-content:space-between;gap:6px;flex:none}
 .hud-grup{display:flex;gap:6px}
 .panel-hud{display:flex;align-items:center;gap:6px;min-height:36px;padding:4px 8px;background:var(--panel);border:3px solid var(--bingkai);border-radius:5px;
   box-shadow:0 3px 0 #14152a;font-family:var(--font-pixel);font-size:11px}
+.tombol-fs{cursor:pointer;color:var(--teks);user-select:none;font-size:14px;padding:4px 9px;transition:all .15s}
+.tombol-fs:hover{filter:brightness(1.25);border-color:var(--api-kuning)}
+.tombol-fs:active{transform:translateY(2px)}
 .panel-hud svg{display:block;image-rendering:pixelated}
 #hud-hati{gap:3px}
 #hud-hati svg.kritis{animation:kedip .5s steps(2) infinite}
 #hud-waktu.genting{color:var(--salah);animation:kedip .5s steps(2) infinite}
 #canvas-wrap{flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center;outline:none}
-#gameCanvas{max-width:100%;max-height:100%;aspect-ratio:1/1;image-rendering:pixelated;border:3px solid var(--bingkai);border-radius:4px;background:var(--void);box-shadow:0 4px 0 #14152a}
+#gameCanvas{height:100%;width:auto;max-width:100%;max-height:100%;aspect-ratio:1/1;image-rendering:pixelated;border:3px solid var(--bingkai);border-radius:6px;background:var(--void);box-shadow:0 4px 14px rgba(0,0,0,.45)}
+:fullscreen #game-screen{padding:8px 0;gap:8px}
+:fullscreen #gameCanvas{border-width:4px;box-shadow:0 8px 30px rgba(0,0,0,.7)}
 #canvas-wrap.shake{animation:getar .35s linear}
 @keyframes getar{0%,100%{transform:translate(0)}20%{transform:translate(-6px,3px)}40%{transform:translate(5px,-3px)}60%{transform:translate(-4px,-2px)}80%{transform:translate(3px,2px)}}
 @keyframes kedip{50%{opacity:.25}}

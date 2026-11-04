@@ -6,14 +6,14 @@
     TILE_SIZE: 40, NYAWA_AWAL: 3, WAKTU_AWAL: 300,
     POIN_BARIKADE: 100, POIN_MONSTER: 50, COOLDOWN_AKSI_MS: 320,
     BONUS_WAKTU_PER_DETIK: 1, BONUS_NYAWA: 50,
-    DURASI_LANGKAH_MS: 110, DELAY_TAHAN_TOMBOL_MS: 130, COOLDOWN_API_MS: 500,
+    DURASI_LANGKAH_MS: 165, DELAY_TAHAN_TOMBOL_MS: 185, COOLDOWN_API_MS: 500,
     TIMER_JEDA_SAAT_SOAL: true, TAMPILKAN_PENJELASAN_SAAT_BENAR: false,
     DURASI_API_AKTIF_MS: 1600, DURASI_API_PADAM_MS: 1600, DURASI_API_PERINGATAN_MS: 800,
     KUNCI_HIGHSCORE: 'labirin_peluang_highscore',
     DURASI_SHAKE_MS: 350, DURASI_KEDIP_MS: 80, BATAS_WAKTU_GENTING: 30,
     VISUAL: {
-      SKALA_SPRITE: 2, RADIUS_CAHAYA_OBOR: 2.6, RADIUS_CAHAYA_PEMAIN: 3.4, RADIUS_CAHAYA_API: 2,
-      JUMLAH_CINCIN_CAHAYA: 3, OPASITAS_VIGNETTE: 0.5, JARAK_OBOR_DINDING: 4,
+      SKALA_SPRITE: 2, RADIUS_CAHAYA_OBOR: 0.9, RADIUS_CAHAYA_PEMAIN: 3.5, RADIUS_CAHAYA_API: 1.4,
+      JUMLAH_CINCIN_CAHAYA: 3, OPASITAS_VIGNETTE: 0.94, JARAK_OBOR_DINDING: 6,
       KECEPATAN_NYALA_API: 0.012, KECEPATAN_DENYUT_FINISH: 0.004,
       PERSEN_LUMUT: 22, PERSEN_RETAK: 22, AMPLITUDO_BOB_LANGKAH: 3
     }
@@ -46,14 +46,14 @@
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1],
     [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1, 1],
-    [1, 1, 3, 1, 1, 1, 0, 4, 3, 3, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 3, 1, 1, 1, 0, 4, 3, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
   ];
@@ -73,24 +73,24 @@
   // Daftar monster penunggu di setiap ruangan dungeon (tipe: slime / imp)
   const MONSTER_AWAL = [
     // Ruang 1: Ruang Awal (Start Chamber)
-    { id: 1, tipe: 'slime', c0: 3, r0: 3, axis: 'x', min: 2, max: 4, stepInterval: 850 },
+    { id: 1, tipe: 'slime', c0: 3, r0: 3, axis: 'x', min: 2, max: 4, stepInterval: 1250 },
     // Ruang 2: Lorong Depan Barikade 1
-    { id: 2, tipe: 'slime', c0: 7, r0: 3, axis: 'x', min: 6, max: 7, stepInterval: 800 },
+    { id: 2, tipe: 'slime', c0: 7, r0: 3, axis: 'x', min: 6, max: 7, stepInterval: 1200 },
     // Ruang 3: Galeri Utara (Northern Gallery)
-    { id: 3, tipe: 'imp', c0: 13, r0: 1, axis: 'x', min: 10, max: 16, stepInterval: 750 },
-    { id: 4, tipe: 'slime', c0: 18, r0: 3, axis: 'y', min: 2, max: 5, stepInterval: 800 },
+    { id: 3, tipe: 'imp', c0: 13, r0: 1, axis: 'x', min: 10, max: 16, stepInterval: 1150 },
+    { id: 4, tipe: 'slime', c0: 18, r0: 3, axis: 'y', min: 2, max: 5, stepInterval: 1200 },
     // Ruang 4: Aula Besar Tengah (Central Grand Hall)
-    { id: 5, tipe: 'imp', c0: 16, r0: 10, axis: 'x', min: 14, max: 18, stepInterval: 750 },
-    { id: 6, tipe: 'slime', c0: 6, r0: 12, axis: 'x', min: 4, max: 8, stepInterval: 800 },
+    { id: 5, tipe: 'imp', c0: 16, r0: 10, axis: 'x', min: 14, max: 18, stepInterval: 1150 },
+    { id: 6, tipe: 'slime', c0: 6, r0: 12, axis: 'x', min: 4, max: 8, stepInterval: 1200 },
     // Ruang 5: Kripta Barat (Western Crypt)
-    { id: 7, tipe: 'slime', c0: 2, r0: 14, axis: 'x', min: 1, max: 3, stepInterval: 800 },
+    { id: 7, tipe: 'slime', c0: 2, r0: 14, axis: 'x', min: 1, max: 3, stepInterval: 1200 },
     // Ruang 6: Lorong Bawah Selatan (Southern Corridor)
-    { id: 8, tipe: 'imp', c0: 5, r0: 19, axis: 'x', min: 2, max: 7, stepInterval: 750 },
-    { id: 9, tipe: 'slime', c0: 16, r0: 19, axis: 'x', min: 15, max: 19, stepInterval: 800 },
+    { id: 8, tipe: 'imp', c0: 5, r0: 19, axis: 'x', min: 2, max: 7, stepInterval: 1150 },
+    { id: 9, tipe: 'slime', c0: 16, r0: 19, axis: 'x', min: 15, max: 19, stepInterval: 1200 },
     // Ruang 7: Halaman Makam (South-East Court)
-    { id: 10, tipe: 'imp', c0: 18, r0: 16, axis: 'x', min: 17, max: 19, stepInterval: 750 },
+    { id: 10, tipe: 'imp', c0: 18, r0: 16, axis: 'x', min: 17, max: 19, stepInterval: 1150 },
     // Ruang 8: Kuil Suci Finish (Inner Sanctum)
-    { id: 11, tipe: 'imp', c0: 11, r0: 15, axis: 'x', min: 10, max: 12, stepInterval: 700 }
+    { id: 11, tipe: 'imp', c0: 11, r0: 15, axis: 'x', min: 10, max: 12, stepInterval: 1100 }
   ];
   const KOLOM = MAP[0].length, BARIS = MAP.length;
 
@@ -471,7 +471,7 @@
     g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(px + 20, py + 36, 11, 4, 0, 0, Math.PI * 2); g.fill();
     const now = performance.now();
     // Animasi walk-cycle 5 frame saat melangkah, frame 1 saat diam berdiri
-    const frameIdx = S.sedangBergerak ? Math.floor((now / 90) % 5) : 1;
+    const frameIdx = S.sedangBergerak ? Math.floor((now / 115) % 5) : 1;
     const dw = 24, dh = 36;
     const drawY = py + 2;
 
@@ -493,20 +493,49 @@
     }
   }
 
-  // Pencahayaan berundak: vignette + lubang cahaya (lingkaran alfa bertingkat, tetap terlihat pixel)
-  function cincin(g, x, y, radius, warna) {
-    const n = V.JUMLAH_CINCIN_CAHAYA;
-    for (let i = 0; i < n; i++) { g.fillStyle = warna; g.beginPath(); g.arc(x, y, radius * T * (1 - i / n), 0, Math.PI * 2); g.fill(); }
+  // Pencahayaan Lentera & Kegelapan Dungeon (Fog of War)
+  function lubangCahaya(g, x, y, radius, intensitas) {
+    const rPx = radius * T;
+    const grad = g.createRadialGradient(x, y, rPx * 0.15, x, y, rPx);
+    const alpha = intensitas !== undefined ? intensitas : 1.0;
+    grad.addColorStop(0, 'rgba(0,0,0,' + alpha + ')');
+    grad.addColorStop(0.55, 'rgba(0,0,0,' + (alpha * 0.9) + ')');
+    grad.addColorStop(0.82, 'rgba(0,0,0,' + (alpha * 0.35) + ')');
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = grad;
+    g.beginPath();
+    g.arc(x, y, rPx, 0, Math.PI * 2);
+    g.fill();
   }
+
+  function pendarLantai(g, x, y, radius, warna) {
+    const rPx = radius * T;
+    const grad = g.createRadialGradient(x, y, 4, x, y, rPx);
+    grad.addColorStop(0, warna);
+    grad.addColorStop(0.65, warna.replace(/[\d\.]+\)$/, '0.03)'));
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = grad;
+    g.beginPath();
+    g.arc(x, y, rPx, 0, Math.PI * 2);
+    g.fill();
+  }
+
   function gambarCahaya(t, sumber) {
     const W = cache.width;
-    sumber.forEach(s => cincin(ctx, s.x, s.y, s.r, s.warm)); // pendar hangat di lantai
-    lctx.globalCompositeOperation = 'source-over'; lctx.clearRect(0, 0, W, W);
-    lctx.fillStyle = 'rgba(36,26,43,' + V.OPASITAS_VIGNETTE + ')'; lctx.fillRect(0, 0, W, W);
-    lctx.strokeStyle = 'rgba(36,26,43,0.12)';
-    for (let k = 0; k < 3; k++) { lctx.lineWidth = (3 - k) * T * 1.4; lctx.strokeRect(0, 0, W, W); }
+    // 1. Pendaran hangat di lantai bawah
+    sumber.forEach(s => pendarLantai(ctx, s.x, s.y, s.r, s.warm));
+
+    // 2. Lapisan Kegelapan Dungeon (Pekat di luar jangkauan cahaya karakter)
+    lctx.globalCompositeOperation = 'source-over';
+    lctx.clearRect(0, 0, W, W);
+    lctx.fillStyle = 'rgba(20, 14, 25, ' + V.OPASITAS_VIGNETTE + ')';
+    lctx.fillRect(0, 0, W, W);
+
+    // 3. Potong lubang lentera karakter & sumber cahaya di dungeon
     lctx.globalCompositeOperation = 'destination-out';
-    sumber.forEach(s => cincin(lctx, s.x, s.y, s.r, 'rgba(0,0,0,0.35)'));
+    sumber.forEach(s => lubangCahaya(lctx, s.x, s.y, s.r, s.intensitas));
+
+    // 4. Salin lapisan kegelapan ke atas kanvas utama
     ctx.drawImage(luz, 0, 0);
   }
 
@@ -523,21 +552,21 @@
     ctx.clearRect(0, 0, W, W);
     ctx.drawImage(cache, 0, 0); // statis: lantai, dinding, dekorasi
     const sumber = [];
-    S.obor.forEach(o => { // nyala obor + sumber cahaya
+    S.obor.forEach(o => { // nyala obor + sumber cahaya redup
       nyalaApi(ctx, o.c * T + 20, o.r * T + 26, 10, 14, t, o.fase, false);
-      sumber.push({ x: o.c * T + 20, y: (o.r + 1) * T, r: V.RADIUS_CAHAYA_OBOR, warm: 'rgba(255,150,40,0.05)' });
+      sumber.push({ x: o.c * T + 20, y: (o.r + 1) * T, r: V.RADIUS_CAHAYA_OBOR, warm: 'rgba(255,140,40,0.12)', intensitas: 0.35 });
     });
     S.api.forEach(a => {
       gambarApi(ctx, a.c, a.r, now);
       const st = statusApi(now, a.c, a.r);
       if (st === 'aktif') {
-        sumber.push({ x: a.c * T + 20, y: a.r * T + 20, r: V.RADIUS_CAHAYA_API * (1 + 0.1 * Math.sin(now * 0.01 + a.c)), warm: 'rgba(255,120,30,0.06)' });
+        sumber.push({ x: a.c * T + 20, y: a.r * T + 20, r: V.RADIUS_CAHAYA_API * (1 + 0.08 * Math.sin(now * 0.01 + a.c)), warm: 'rgba(255,100,20,0.22)', intensitas: 0.55 });
       } else if (st === 'peringatan') {
-        sumber.push({ x: a.c * T + 20, y: a.r * T + 20, r: 1.4, warm: 'rgba(255,80,20,0.03)' });
+        sumber.push({ x: a.c * T + 20, y: a.r * T + 20, r: 0.9, warm: 'rgba(255,60,10,0.12)', intensitas: 0.25 });
       }
     });
     S.barikade.forEach(b => gambarBarikade(ctx, b.c, b.r, now));
-    if (S.finish) { gambarFinish(ctx, S.finish.c, S.finish.r, t); sumber.push({ x: S.finish.c * T + 20, y: S.finish.r * T + 20, r: 2.2, warm: 'rgba(57,255,136,0.06)' }); }
+    if (S.finish) { gambarFinish(ctx, S.finish.c, S.finish.r, t); sumber.push({ x: S.finish.c * T + 20, y: S.finish.r * T + 20, r: 1.8, warm: 'rgba(57,255,136,0.18)', intensitas: 0.6 }); }
 
     // Gambar Monster
     S.monsters.forEach(m => {
@@ -571,8 +600,9 @@
         }
       }
       sumber.push({
-        x: mpx + 20, y: mpy + 20, r: 1.5,
-        warm: m.tipe === 'imp' ? 'rgba(225,29,72,0.06)' : 'rgba(139,92,246,0.06)'
+        x: mpx + 20, y: mpy + 20, r: 0.85,
+        warm: m.tipe === 'imp' ? 'rgba(225,29,72,0.16)' : 'rgba(139,92,246,0.16)',
+        intensitas: 0.25
       });
     });
 
@@ -594,7 +624,13 @@
     }
 
     if (!(now < S.waktuKebalApi && Math.floor(now / CONFIG.DURASI_KEDIP_MS) % 2 === 0)) gambarPemain(ctx, px, py, prog);
-    sumber.push({ x: px + 20, y: py + 20, r: V.RADIUS_CAHAYA_PEMAIN, warm: 'rgba(255,220,150,0.04)' });
+    const flickerLentera = 1 + 0.03 * Math.sin(now * 0.008) + 0.02 * Math.cos(now * 0.015);
+    sumber.push({
+      x: px + 20, y: py + 20,
+      r: V.RADIUS_CAHAYA_PEMAIN * flickerLentera,
+      warm: 'rgba(255, 215, 125, 0.28)',
+      intensitas: 1.0
+    });
 
     // Efek Tebasan Serangan (Holy Slash Arc)
     if (S.efekSerang) {
@@ -766,7 +802,7 @@
       const v = (S.petaAktif[nb] || [])[nk];
       if (v === TILE.LANTAI || (v === TILE.API && !isApiAktif(now, nk, nb))) {
         S.prevKol = S.kol; S.prevBar = S.bar; S.kol = nk; S.bar = nb;
-        S.anim = { fx: S.prevKol, fy: S.prevBar, tx: nk, ty: nb, t0: now, dur: 70, mundur: false };
+        S.anim = { fx: S.prevKol, fy: S.prevBar, tx: nk, ty: nb, t0: now, dur: 95, mundur: false };
         S.sedangBergerak = true;
         if (v === TILE.FINISH) gameOver(true, 'selamat');
         umumkan('Menghindar ke depan');
@@ -1074,6 +1110,29 @@
       });
       btnAksi.addEventListener('contextmenu', e => e.preventDefault());
     }
+
+    // Tombol Layar Penuh (Fullscreen)
+    function toggleLayarPenuh() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+    const btnFs = $('btn-fullscreen');
+    if (btnFs) {
+      btnFs.addEventListener('click', toggleLayarPenuh);
+      document.addEventListener('fullscreenchange', () => {
+        const aktif = !!document.fullscreenElement;
+        btnFs.innerHTML = aktif ? '<span>🗗</span>' : '<span>⛶</span>';
+        btnFs.title = aktif ? 'Keluar Layar Penuh (F / Esc)' : 'Layar Penuh (F)';
+      });
+    }
+    document.addEventListener('keydown', e => {
+      if (e.key.toLowerCase() === 'f' && !e.repeat && (S.gameState === 'bermain' || S.gameState === 'menu')) {
+        toggleLayarPenuh();
+      }
+    });
     keMenu();
   });
 
