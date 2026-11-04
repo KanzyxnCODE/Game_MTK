@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Labirin Peluang: Misi Penyelamatan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+
+<!-- ===== MENU UTAMA ===== -->
+<div id="main-menu">
+  <section class="panel menu-panel">
+    <h1>Labirin Peluang</h1>
+    <p class="subjudul">Misi Penyelamatan</p>
+    <p class="cerita">Rekanmu terkurung di ujung labirin bawah tanah, dan hanya kamu yang bisa menembusnya. Barikade terkunci menghadang jalan, dan hanya soal Peluang yang bisa menghancurkannya.</p>
+    <ul class="instruksi">
+      <li>Gerak dengan <b>W/A/S/D</b> atau tombol panah (D-pad di HP).</li>
+      <li>Tekan <b>SPASI</b> (atau tombol ⚔ di HP) untuk <b>menyerang monster</b> atau <b>menghindar cepat (dodge dash)</b>!</li>
+      <li>Waspadai jebakan api di jalur! Lewati saat padam dan hindari saat berkobar.</li>
+      <li>Tabrak barikade lalu jawab soal peluang untuk membukanya.</li>
+    </ul>
+    <!-- Ganti VIDEO_ID_DISINI dengan ID video YouTube (bagian setelah "v=" pada link video). -->
+    <div class="video-responsive">
+      <iframe src="https://www.youtube-nocookie.com/embed/VIDEO_ID_DISINI" title="Video pembelajaran Peluang" loading="lazy" allowfullscreen></iframe>
+    </div>
+    <p class="rekor">High Score: <strong id="highscore-menu">0</strong></p>
+    <button id="btn-mulai" class="tombol" type="button">MULAI PETUALANGAN</button>
+  </section>
+</div>
+
+<!-- ===== LAYAR GAME ===== -->
+<div id="game-screen" class="hidden">
+  <header class="hud">
+    <div class="hud-grup">
+      <div class="panel-hud" id="hud-hati" role="img" aria-label="Nyawa"></div>
+      <div class="panel-hud"><span class="sr-only">Waktu </span><span id="hud-waktu">05:00</span></div>
+    </div>
+    <div class="hud-grup">
+      <div class="panel-hud"><span id="ikon-kunci" aria-hidden="true"></span><span class="sr-only">Barikade </span><span id="hud-barikade">0/5</span></div>
+      <div class="panel-hud"><span class="sr-only">Skor </span><span id="hud-skor">0</span></div>
+    </div>
+  </header>
+  <div id="canvas-wrap" tabindex="-1">
+    <canvas id="gameCanvas" role="img" aria-label="Labirin dungeon tampak atas. Gerakkan priestess menuju pintu keluar hijau, waspadai jebakan api di jalur, dan hancurkan barikade dengan menjawab soal peluang."></canvas>
+  </div>
+  <div id="kontrol-mobile">
+    <div id="dpad">
+      <button type="button" class="dp dp-atas" data-dx="0" data-dy="-1" aria-label="Atas"></button>
+      <button type="button" class="dp dp-kiri" data-dx="-1" data-dy="0" aria-label="Kiri"></button>
+      <button type="button" class="dp dp-kanan" data-dx="1" data-dy="0" aria-label="Kanan"></button>
+      <button type="button" class="dp dp-bawah" data-dx="0" data-dy="1" aria-label="Bawah"></button>
+    </div>
+    <button type="button" id="btn-aksi" class="tombol-aksi" aria-label="Aksi Serang dan Hindari (Spasi)">
+      <span class="aksi-ikon" aria-hidden="true">⚔</span>
+      <span class="aksi-label">SPASI</span>
+    </button>
+  </div>
+  <div id="status-sr" class="sr-only" aria-live="polite"></div>
+</div>
+
+<!-- ===== MODAL SOAL (tanpa tombol tutup) ===== -->
+<div id="question-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="soal-kategori">
+  <div class="kotak panel">
+    <p class="label"><span id="soal-kategori"></span> | <span id="soal-nomor"></span></p>
+    <p id="soal-teks" class="teks-soal"></p>
+    <div id="soal-opsi" class="opsi-grid"></div>
+  </div>
+</div>
+
+<!-- ===== MODAL FEEDBACK ===== -->
+<div id="feedback-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="fb-judul">
+  <div class="kotak panel" id="fb-kotak">
+    <h2 id="fb-judul"></h2>
+    <p id="fb-jawaban" class="teks-soal"></p>
+    <p id="fb-penjelasan" class="teks-soal"></p>
+    <button id="btn-lanjut" class="tombol" type="button">Lanjut</button>
+  </div>
+</div>
+
+<!-- ===== LAYAR HASIL ===== -->
+<div id="result-screen" class="hidden">
+  <section class="panel menu-panel">
+    <h2 id="res-judul"></h2>
+    <p id="res-alasan" class="cerita"></p>
+    <p id="res-rekor" class="rekor-baru hidden">REKOR BARU!</p>
+    <dl class="statistik">
+      <dt>Skor akhir</dt><dd id="res-skor">0</dd>
+      <dt>Sisa waktu</dt><dd id="res-waktu">0</dd>
+      <dt>Sisa nyawa</dt><dd id="res-nyawa">0</dd>
+      <dt>Barikade</dt><dd id="res-barikade">0/0</dd>
+      <dt>Monster dikalahkan</dt><dd id="res-monster">0</dd>
+      <dt>Jawaban benar</dt><dd id="res-benar">0</dd>
+      <dt>Jawaban salah</dt><dd id="res-salah">0</dd>
+    </dl>
+    <div class="baris-tombol">
+      <button id="btn-restart" class="tombol" type="button">RESTART</button>
+      <button id="btn-menu" class="tombol sekunder" type="button">MENU UTAMA</button>
+    </div>
+  </section>
+</div>
+
+</main>
+<script src="script.js"></script>
+</body>
+</html>
