@@ -10,6 +10,7 @@
     TIMER_JEDA_SAAT_SOAL: true, TAMPILKAN_PENJELASAN_SAAT_BENAR: false,
     DURASI_API_AKTIF_MS: 1600, DURASI_API_PADAM_MS: 1600, DURASI_API_PERINGATAN_MS: 800,
     KUNCI_HIGHSCORE: 'labirin_peluang_highscore',
+    KUNCI_POOL_SOAL: 'labirin_peluang_pool_soal',
     DURASI_SHAKE_MS: 350, DURASI_KEDIP_MS: 80, BATAS_WAKTU_GENTING: 30,
     VISUAL: {
       SKALA_SPRITE: 2, RADIUS_CAHAYA_OBOR: 0.9, RADIUS_CAHAYA_PEMAIN: 3.5, RADIUS_CAHAYA_API: 1.4,
@@ -32,114 +33,427 @@
   // ====== PETA (edit di sini) ======
   // Legenda: 0=lantai, 1=dinding, 2=barikade, 3=api, 4=pintu keluar, 5=posisi awal
   const TILE = { LANTAI: 0, DINDING: 1, BARIKADE: 2, API: 3, FINISH: 4, START: 5 };
-  // Peta Labirin 21x21 yang luas & menantang:
-  // Lorong lega dengan pintu gerbang jebakan api wajib di setiap zona menuju barikade & finish.
+  // Peta Labirin 28x16 Persegi Panjang (Rasio 16:9 / Widescreen):
+  // Menampilkan denah labirin penuh di layar monitor & mobile landscape tanpa ruang kosong.
   const MAP = [
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 5, 0, 0, 0, 3, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1, 1],
-    [1, 1, 3, 1, 1, 1, 0, 4, 3, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 5, 0, 0, 2, 0, 0, 3, 1, 0, 0, 0, 1, 0, 0, 3, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 0, 0, 3, 1, 0, 0, 0, 1, 0, 0, 3, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
   ];
-  // Dekorasi non-logika (peti di lorong & ruang harta)
+  // Dekorasi peti harta di ruangan labirin
   const DEKORASI = [
-    { kolom: 3, baris: 1, jenis: 'peti' },
+    { kolom: 1, baris: 1, jenis: 'peti' },
     { kolom: 7, baris: 1, jenis: 'peti' },
-    { kolom: 14, baris: 1, jenis: 'peti' },
-    { kolom: 19, baris: 4, jenis: 'peti' },
-    { kolom: 16, baris: 10, jenis: 'peti' },
-    { kolom: 6, baris: 10, jenis: 'peti' },
-    { kolom: 1, baris: 17, jenis: 'peti' },
-    { kolom: 6, baris: 19, jenis: 'peti' },
-    { kolom: 16, baris: 18, jenis: 'peti' },
-    { kolom: 11, baris: 14, jenis: 'peti' }
+    { kolom: 15, baris: 1, jenis: 'peti' },
+    { kolom: 23, baris: 1, jenis: 'peti' },
+    { kolom: 26, baris: 5, jenis: 'peti' },
+    { kolom: 2, baris: 6, jenis: 'peti' },
+    { kolom: 1, baris: 14, jenis: 'peti' },
+    { kolom: 26, baris: 11, jenis: 'peti' }
   ];
-  // Daftar monster penunggu di setiap ruangan dungeon (tipe: slime / imp)
+  // Daftar monster penjaga labirin (pemain wajib menyerang monster yang menghadang jalan)
   const MONSTER_AWAL = [
-    // Ruang 1: Ruang Awal (Start Chamber)
-    { id: 1, tipe: 'slime', c0: 3, r0: 3, axis: 'x', min: 2, max: 4, stepInterval: 1250 },
-    // Ruang 2: Lorong Depan Barikade 1
-    { id: 2, tipe: 'slime', c0: 7, r0: 3, axis: 'x', min: 6, max: 7, stepInterval: 1200 },
-    // Ruang 3: Galeri Utara (Northern Gallery)
-    { id: 3, tipe: 'imp', c0: 13, r0: 1, axis: 'x', min: 10, max: 16, stepInterval: 1150 },
-    { id: 4, tipe: 'slime', c0: 18, r0: 3, axis: 'y', min: 2, max: 5, stepInterval: 1200 },
-    // Ruang 4: Aula Besar Tengah (Central Grand Hall)
-    { id: 5, tipe: 'imp', c0: 16, r0: 10, axis: 'x', min: 14, max: 18, stepInterval: 1150 },
-    { id: 6, tipe: 'slime', c0: 6, r0: 12, axis: 'x', min: 4, max: 8, stepInterval: 1200 },
-    // Ruang 5: Kripta Barat (Western Crypt)
-    { id: 7, tipe: 'slime', c0: 2, r0: 14, axis: 'x', min: 1, max: 3, stepInterval: 1200 },
-    // Ruang 6: Lorong Bawah Selatan (Southern Corridor)
-    { id: 8, tipe: 'imp', c0: 5, r0: 19, axis: 'x', min: 2, max: 7, stepInterval: 1150 },
-    { id: 9, tipe: 'slime', c0: 16, r0: 19, axis: 'x', min: 15, max: 19, stepInterval: 1200 },
-    // Ruang 7: Halaman Makam (South-East Court)
-    { id: 10, tipe: 'imp', c0: 18, r0: 16, axis: 'x', min: 17, max: 19, stepInterval: 1150 },
-    // Ruang 8: Kuil Suci Finish (Inner Sanctum)
-    { id: 11, tipe: 'imp', c0: 11, r0: 15, axis: 'x', min: 10, max: 12, stepInterval: 1100 }
+    // Ruang 1: Penjaga Koridor Barikade 1 (Wajib Diserang)
+    { id: 1, tipe: 'slime', c0: 4, r0: 2, axis: 'x', min: 3, max: 4, stepInterval: 1200 },
+    // Ruang 2: Patroli Galeri Utara & Penjaga Barikade 2 (Wajib Diserang)
+    { id: 2, tipe: 'imp', c0: 12, r0: 1, axis: 'x', min: 7, max: 18, stepInterval: 1050 },
+    { id: 3, tipe: 'slime', c0: 22, r0: 3, axis: 'x', min: 19, max: 24, stepInterval: 1100 },
+    { id: 4, tipe: 'imp', c0: 25, r0: 3, axis: 'y', min: 2, max: 3, stepInterval: 1000 },
+    // Ruang 3: Lorong Sayap Timur & Penjaga Barikade 3 (Wajib Diserang)
+    { id: 5, tipe: 'slime', c0: 23, r0: 6, axis: 'x', min: 21, max: 25, stepInterval: 1150 },
+    { id: 6, tipe: 'imp', c0: 18, r0: 6, axis: 'x', min: 18, max: 19, stepInterval: 950 },
+    // Ruang 4: Aula Besar Tengah & Penjaga Barikade 4 (Wajib Diserang)
+    { id: 7, tipe: 'imp', c0: 10, r0: 8, axis: 'x', min: 5, max: 15, stepInterval: 1100 },
+    { id: 8, tipe: 'slime', c0: 4, r0: 8, axis: 'y', min: 7, max: 8, stepInterval: 1000 },
+    // Ruang 5: Lorong Bawah Barat Daya & Penjaga Barikade 5 (Wajib Diserang)
+    { id: 9, tipe: 'slime', c0: 3, r0: 11, axis: 'x', min: 1, max: 5, stepInterval: 1150 },
+    { id: 10, tipe: 'imp', c0: 14, r0: 12, axis: 'x', min: 13, max: 14, stepInterval: 900 },
+    // Ruang 6: Penjaga Sanctuary & Gerbang Portal Finish (Wajib Diserang)
+    { id: 11, tipe: 'imp', c0: 20, r0: 11, axis: 'x', min: 18, max: 25, stepInterval: 1000 },
+    { id: 12, tipe: 'slime', c0: 23, r0: 13, axis: 'x', min: 22, max: 23, stepInterval: 900 }
   ];
   const KOLOM = MAP[0].length, BARIS = MAP.length;
 
-  // ====== BANK SOAL (edit di sini) ======
-  // Cara menambah soal (sampai 50 atau lebih): salin satu objek, isi field-nya, dan tambahkan koma.
-  // jawabanBenar = index 0-3 pada array opsi. Barikade mengambil soal dari antrean acak (tanpa pengulangan
-  // sampai semua soal terpakai). Notasi: [a/b] = pecahan, ^{x} = pangkat, _{x} = subskrip.
+    // ====== BANK SOAL PELUANG (PROBABILITAS) - 60 SOAL (10 SOAL PER KATEGORI) ======
+  // 1. Konsep dasar peluang (10 soal)
+  // 2. Ruang sampel dan kejadian (10 soal)
+  // 3. Peluang teoritis dan empiris (10 soal)
+  // 4. Kejadian saling lepas (10 soal)
+  // 5. Kejadian saling bebas (10 soal)
+  // 6. Peluang gabungan dua kejadian (10 soal)
   const bankSoal = [
     {
-      kategori: 'Ruang Sampel', tingkat: 'mudah',
-      pertanyaan: 'Gerbang sandi dibuka dengan melempar 1 koin dan 1 dadu bersamaan. Berapa banyak anggota ruang sampelnya?',
-      opsi: ['8', '12', '6', '36'], jawabanBenar: 1,
-      penjelasan: 'n(S) = banyak sisi koin x banyak sisi dadu = 2 x 6 = 12. (8 hasil dari 2+6 dan 36 dari 6x6 adalah kesalahan umum.)'
+      kategori: 'Konsep Dasar Peluang', tingkat: 'mudah',
+      pertanyaan: 'Sebuah kantong sihir berisi 6 kristal api dan 4 kristal es. Satu kristal diambil secara acak. Berapa peluang terambil kristal api?',
+      opsi: ['[2/5]', '[3/5]', '[1/4]', '[3/4]'], jawabanBenar: 1,
+      penjelasan: 'n(Api) = 6, n(S) = 6 + 4 = 10. Peluang P = [6/10] disederhanakan menjadi [3/5].'
     },
     {
-      kategori: 'Peluang Kejadian', tingkat: 'mudah',
-      pertanyaan: 'Peti berisi 5 kunci emas, 3 kunci perak, dan 2 kunci perunggu. Satu kunci diambil acak. Berapa peluang terambil kunci emas?',
-      opsi: ['[5/8]', '[3/10]', '[1/2]', '[1/5]'], jawabanBenar: 2,
-      penjelasan: 'P(A) = n(A)/n(S) dengan n(A) = 5 dan n(S) = 5+3+2 = 10. Maka P = [5/10] = [1/2].'
+      kategori: 'Konsep Dasar Peluang', tingkat: 'mudah',
+      pertanyaan: 'Manakah rentang nilai peluang yang benar untuk suatu kejadian A dalam matematika?',
+      opsi: ['P(A) > 1', 'P(A) < 0', '0 ≤ P(A) ≤ 1', '-1 ≤ P(A) ≤ 1'], jawabanBenar: 2,
+      penjelasan: 'Nilai peluang suatu kejadian selalu berada pada rentang 0 ≤ P(A) ≤ 1 (0 = kemustahilan, 1 = kepastian).'
     },
     {
-      kategori: 'Peluang Komplemen', tingkat: 'sedang',
-      pertanyaan: 'Peluang menebak sandi obor dengan benar adalah [2/9]. Berapa peluang tebakan itu salah?',
-      opsi: ['[2/9]', '[5/9]', '[1/9]', '[7/9]'], jawabanBenar: 3,
-      penjelasan: 'Rumus komplemen: P(A\u2019) = 1 - P(A) = 1 - [2/9] = [9/9] - [2/9] = [7/9].'
+      kategori: 'Konsep Dasar Peluang', tingkat: 'sedang',
+      pertanyaan: 'Peluang seorang petualang terkena jebakan duri adalah [3/8]. Berapa peluang petualang tersebut selamat (tidak terkena jebakan)?',
+      opsi: ['[3/8]', '[1/8]', '[7/8]', '[5/8]'], jawabanBenar: 3,
+      penjelasan: 'Rumus komplemen: P(Selamat) = 1 - P(Kena) = 1 - [3/8] = [8/8] - [3/8] = [5/8].'
     },
     {
-      kategori: 'Frekuensi Harapan', tingkat: 'sedang',
-      pertanyaan: 'Untuk membuka gembok, dadu dilempar 120 kali. Berapa frekuensi harapan muncul mata dadu 6?',
-      opsi: ['20', '24', '60', '120'], jawabanBenar: 0,
-      penjelasan: 'Fh = P(A) x banyak percobaan = [1/6] x 120 = 20.'
+      kategori: 'Konsep Dasar Peluang', tingkat: 'sedang',
+      pertanyaan: 'Peti berisi 5 kunci emas, 3 kunci perak, dan 2 kunci perunggu. Satu kunci diambil acak. Berapa peluang terambil BUKAN kunci perunggu?',
+      opsi: ['[4/5]', '[1/5]', '[3/10]', '[1/2]'], jawabanBenar: 0,
+      penjelasan: 'Bukan perunggu = emas + perak = 5 + 3 = 8 kunci. Total n(S) = 10. P = [8/10] = [4/5]. Atau komplemen: 1 - [2/10] = [4/5].'
     },
     {
-      kategori: 'Permutasi', tingkat: 'sedang',
-      pertanyaan: 'Ada 5 kunci berbeda. Berapa cara menyusun 3 kunci pada 3 lubang gembok berurutan (urutan diperhatikan)?',
-      opsi: ['10', '60', '120', '125'], jawabanBenar: 1,
-      penjelasan: 'P(n,r) = n!/(n-r)! sehingga P(5,3) = 5!/2! = 120/2 = 60. Bukan 5^{3} = 125 (itu untuk pengulangan) dan bukan 10 (itu kombinasi).'
+      kategori: 'Konsep Dasar Peluang', tingkat: 'mudah',
+      pertanyaan: 'Dalam sebuah ruangan dungeon, terdapat 12 pintu dan hanya 1 pintu yang benar menuju jalan keluar. Berapa peluang memilih pintu yang benar?',
+      opsi: ['[1/12]', '[1/6]', '[1/2]', '[11/12]'], jawabanBenar: 0,
+      penjelasan: 'Hanya ada 1 pintu benar dari total 12 pintu. Maka peluangnya adalah P = [1/12].'
     },
     {
-      kategori: 'Kombinasi', tingkat: 'sedang',
-      pertanyaan: 'Dari 6 rekan, akan dipilih 3 orang sebagai penjaga obor tanpa memperhatikan urutan. Berapa banyak cara memilihnya?',
-      opsi: ['120', '216', '20', '18'], jawabanBenar: 2,
-      penjelasan: 'C(n,r) = n!/(r!(n-r)!) sehingga C(6,3) = 6!/(3! x 3!) = 720/36 = 20. (120 adalah permutasi P(6,3).)'
+      kategori: 'Konsep Dasar Peluang', tingkat: 'mudah',
+      pertanyaan: 'Peluang munculnya mata dadu 7 pada pelemparan sebuah dadu bersisi 6 standar adalah...',
+      opsi: ['1', '[1/6]', '0', '[7/6]'], jawabanBenar: 2,
+      penjelasan: 'Mata dadu 7 tidak ada pada dadu standar (ruang sampel hanya 1 sampai 6), sehingga ini adalah kejadian mustahil dengan peluang 0.'
     },
     {
-      kategori: 'Aplikasi Gabungan', tingkat: 'sulit',
-      pertanyaan: 'Peti berisi 4 kunci merah dan 3 kunci biru. Dua kunci diambil sekaligus. Berapa peluang keduanya merah?',
-      opsi: ['[4/7]', '[16/49]', '[1/7]', '[2/7]'], jawabanBenar: 3,
-      penjelasan: 'n(S) = C(7,2) = 21 dan n(A) = C(4,2) = 6. Maka P = [6/21] = [2/7]. (16/49 salah karena kunci tidak dikembalikan.)'
+      kategori: 'Konsep Dasar Peluang', tingkat: 'sedang',
+      pertanyaan: 'Dari 25 ramuan di laboratorium, 15 ramuan penambah darah dan sisanya racun. Berapa peluang seorang petualang mengambil ramuan racun?',
+      opsi: ['[3/5]', '[2/5]', '[1/5]', '[4/5]'], jawabanBenar: 1,
+      penjelasan: 'Banyak ramuan racun = 25 - 15 = 10. Peluang terambil racun = [10/25] disederhanakan menjadi [2/5].'
+    },
+    {
+      kategori: 'Konsep Dasar Peluang', tingkat: 'mudah',
+      pertanyaan: 'Sebuah koin seimbang dilempar satu kali. Berapa peluang munculnya sisi Angka?',
+      opsi: ['[1/4]', '[1/2]', '1', '0'], jawabanBenar: 1,
+      penjelasan: 'Koin memiliki 2 sisi (Angka dan Gambar). Peluang muncul sisi Angka adalah [1/2].'
+    },
+    {
+      kategori: 'Konsep Dasar Peluang', tingkat: 'sedang',
+      pertanyaan: 'Jika peluang hari ini turun hujan salju di puncak gunung labirin adalah 0,28, berapakah peluang hari ini TIDAK turun salju?',
+      opsi: ['0,72', '0,82', '0,28', '0,62'], jawabanBenar: 0,
+      penjelasan: 'P(Tidak Salju) = 1 - P(Salju) = 1 - 0,28 = 0,72.'
+    },
+    {
+      kategori: 'Konsep Dasar Peluang', tingkat: 'sedang',
+      pertanyaan: 'Sebuah toples berisi 8 kelereng merah, 7 kelereng biru, dan 5 kelereng kuning. Satu kelereng diambil acak. Berapa peluang terambil kelereng biru?',
+      opsi: ['[7/20]', '[2/5]', '[1/4]', '[3/10]'], jawabanBenar: 0,
+      penjelasan: 'n(Biru) = 7, total n(S) = 8 + 7 + 5 = 20. Peluang P = [7/20].'
+    },
+    {
+      kategori: 'Ruang Sampel & Kejadian', tingkat: 'mudah',
+      pertanyaan: 'Untuk membuka gerbang sihir, 2 koin perak dan 1 dadu bersisi 6 dilempar bersamaan. Berapa banyak titik sampel pada ruang sampelnya?',
+      opsi: ['12', '18', '24', '36'], jawabanBenar: 2,
+      penjelasan: 'n(S) = banyak sisi koin 1 x koin 2 x dadu = 2 x 2 x 6 = 24 titik sampel.'
+    },
+    {
+      kategori: 'Ruang Sampel & Kejadian', tingkat: 'sedang',
+      pertanyaan: 'Dua buah dadu dilempar bersamaan satu kali. Berapa peluang munculnya mata dadu yang berjumlah 9?',
+      opsi: ['[1/9]', '[1/12]', '[5/36]', '[1/6]'], jawabanBenar: 0,
+      penjelasan: 'n(S) = 6 x 6 = 36. Pasangan jumlah 9: (3,6), (4,5), (5,4), (6,3) ada 4 titik. Peluang P = [4/36] = [1/9].'
+    },
+    {
+      kategori: 'Ruang Sampel & Kejadian', tingkat: 'sedang',
+      pertanyaan: 'Dua buah dadu dilempar bersamaan. Berapa peluang munculnya mata dadu kembar (angka sama pada kedua dadu)?',
+      opsi: ['[1/12]', '[1/6]', '[1/36]', '[5/36]'], jawabanBenar: 1,
+      penjelasan: 'Mata dadu kembar: (1,1), (2,2), (3,3), (4,4), (5,5), (6,6) ada 6 pasangan. n(S) = 36. Peluang P = [6/36] = [1/6].'
+    },
+    {
+      kategori: 'Ruang Sampel & Kejadian', tingkat: 'sedang',
+      pertanyaan: 'Tiga koin dilempar bersamaan sekali. Berapa peluang muncul paling sedikit 2 sisi Gambar?',
+      opsi: ['[3/8]', '[1/4]', '[1/2]', '[5/8]'], jawabanBenar: 2,
+      penjelasan: 'n(S) = 2^{3} = 8. Titik sampel minimal 2 Gambar: (G,G,A), (G,A,G), (A,G,G), (G,G,G) ada 4 titik. P = [4/8] = [1/2].'
+    },
+    {
+      kategori: 'Ruang Sampel & Kejadian', tingkat: 'mudah',
+      pertanyaan: 'Berapa banyak ruang sampel pada pelemparan 4 koin uang logam bersamaan?',
+      opsi: ['8', '12', '16', '32'], jawabanBenar: 2,
+      penjelasan: 'Banyak titik sampel untuk n koin adalah 2^{n} = 2^{4} = 16.'
+    },
+    {
+      kategori: 'Ruang Sampel & Kejadian', tingkat: 'sedang',
+      pertanyaan: 'Dua buah dadu dilempar bersamaan. Berapa banyak titik sampel mata dadu yang berjumlah 10 atau lebih?',
+      opsi: ['4', '6', '8', '10'], jawabanBenar: 1,
+      penjelasan: 'Jumlah 10: (4,6),(5,5),(6,4) = 3. Jumlah 11: (5,6),(6,5) = 2. Jumlah 12: (6,6) = 1. Total = 3 + 2 + 1 = 6 titik sampel.'
+    },
+    {
+      kategori: 'Ruang Sampel & Kejadian', tingkat: 'sedang',
+      pertanyaan: 'Dua dadu dilempar bersamaan sekali. Berapa peluang munculnya mata dadu dengan selisih 2?',
+      opsi: ['[1/6]', '[2/9]', '[5/36]', '[1/4]'], jawabanBenar: 1,
+      penjelasan: 'Selisih 2: (1,3),(2,4),(3,5),(4,6),(3,1),(4,2),(5,3),(6,4) ada 8 titik sampel. Peluang P = [8/36] = [2/9].'
+    },
+    {
+      kategori: 'Ruang Sampel & Kejadian', tingkat: 'mudah',
+      pertanyaan: 'Berapa banyak titik sampel pelemparan sebuah dadu 6 sisi dan 2 koin bersamaan?',
+      opsi: ['12', '24', '36', '48'], jawabanBenar: 1,
+      penjelasan: 'n(S) = 6 (dadu) x 2 (koin 1) x 2 (koin 2) = 24 titik sampel.'
+    },
+    {
+      kategori: 'Ruang Sampel & Kejadian', tingkat: 'sedang',
+      pertanyaan: 'Dua dadu dilempar bersamaan. Berapa peluang jumlah kedua mata dadu kurang dari 5?',
+      opsi: ['[1/6]', '[5/36]', '[1/12]', '[1/4]'], jawabanBenar: 0,
+      penjelasan: 'Jumlah 2: (1,1) = 1. Jumlah 3: (1,2),(2,1) = 2. Jumlah 4: (1,3),(2,2),(3,1) = 3. Total ada 6 titik sampel. P = [6/36] = [1/6].'
+    },
+    {
+      kategori: 'Ruang Sampel & Kejadian', tingkat: 'mudah',
+      pertanyaan: 'Himpunan semua hasil yang mungkin terjadi pada suatu percobaan statistika disebut...',
+      opsi: ['Titik sampel', 'Kejadian majemuk', 'Ruang sampel', 'Frekuensi harapan'], jawabanBenar: 2,
+      penjelasan: 'Ruang sampel (dilambangkan dengan S) adalah himpunan semua hasil yang mungkin terjadi dari suatu percobaan.'
+    },
+    {
+      kategori: 'Peluang Teoritis & Empiris', tingkat: 'mudah',
+      pertanyaan: 'Sebuah koin kuno dilempar 150 kali dan muncul sisi gambar sebanyak 60 kali. Berapa peluang empiris (frekuensi relatif) munculnya gambar?',
+      opsi: ['[3/5]', '[1/2]', '[2/5]', '[1/3]'], jawabanBenar: 2,
+      penjelasan: 'Peluang empiris = frekuensi kemunculan / total percobaan = [60/150] = [6/15] = [2/5] = 0,4.'
+    },
+    {
+      kategori: 'Peluang Teoritis & Empiris', tingkat: 'sedang',
+      pertanyaan: 'Sebuah dadu dilempar sebanyak 180 kali. Berapa frekuensi harapan muncul mata dadu kelipatan 3 (angka 3 atau 6)?',
+      opsi: ['30 kali', '60 kali', '90 kali', '120 kali'], jawabanBenar: 1,
+      penjelasan: 'Mata kelipatan 3: {3, 6} -> P = [2/6] = [1/3]. Frekuensi Harapan Fh = P x N = [1/3] x 180 = 60 kali.'
+    },
+    {
+      kategori: 'Peluang Teoritis & Empiris', tingkat: 'sedang',
+      pertanyaan: 'Peluang ramuan sihir berhasil diracik adalah 0,85. Jika dibuat 200 botol ramuan, berapa frekuensi harapan ramuan yang GAGAL?',
+      opsi: ['15 botol', '170 botol', '25 botol', '30 botol'], jawabanBenar: 3,
+      penjelasan: 'P(Gagal) = 1 - 0,85 = 0,15. Frekuensi harapan gagal = 0,15 x 200 = 30 botol.'
+    },
+    {
+      kategori: 'Peluang Teoritis & Empiris', tingkat: 'sedang',
+      pertanyaan: 'Seorang pemanah membidik sasaran 80 kali dan tepat mengenai sasaran 52 kali. Berapa peluang empiris tembakan pemanah tersebut meleset?',
+      opsi: ['[7/20]', '[13/20]', '[2/5]', '[3/10]'], jawabanBenar: 0,
+      penjelasan: 'Banyak meleset = 80 - 52 = 28 kali. Peluang empiris meleset = [28/80] disederhanakan dibagi 4 menjadi [7/20].'
+    },
+    {
+      kategori: 'Peluang Teoritis & Empiris', tingkat: 'mudah',
+      pertanyaan: 'Sebuah dadu dilempar 300 kali. Berapa frekuensi harapan muncul mata dadu bilangan prima (2, 3, 5)?',
+      opsi: ['100 kali', '150 kali', '200 kali', '50 kali'], jawabanBenar: 1,
+      penjelasan: 'Prima pada dadu: {2, 3, 5} ada 3 mata, P = [3/6] = [1/2]. Fh = [1/2] x 300 = 150 kali.'
+    },
+    {
+      kategori: 'Peluang Teoritis & Empiris', tingkat: 'sedang',
+      pertanyaan: 'Pada percobaan melempar 2 koin sebanyak 100 kali, muncul 2 Angka sebanyak 28 kali. Berapakah nilai peluang empiris munculnya 2 Angka?',
+      opsi: ['0,25', '0,28', '0,50', '0,14'], jawabanBenar: 1,
+      penjelasan: 'Peluang empiris = frekuensi / total = 28 / 100 = 0,28. (Peluang teoritisnya adalah 1/4 = 0,25).'
+    },
+    {
+      kategori: 'Peluang Teoritis & Empiris', tingkat: 'sedang',
+      pertanyaan: 'Dua koin dilempar bersamaan sebanyak 120 kali. Berapakah frekuensi harapan munculnya 1 Angka dan 1 Gambar?',
+      opsi: ['30 kali', '60 kali', '90 kali', '40 kali'], jawabanBenar: 1,
+      penjelasan: 'Ruang sampel 2 koin: (A,A),(A,G),(G,A),(G,G). Kejadian 1A 1G: {(A,G),(G,A)} -> P = [2/4] = [1/2]. Fh = [1/2] x 120 = 60 kali.'
+    },
+    {
+      kategori: 'Peluang Teoritis & Empiris', tingkat: 'mudah',
+      pertanyaan: 'Perbedaan utama antara peluang empiris dan peluang teoritis adalah...',
+      opsi: ['Empiris berdasarkan percobaan nyata, teoritis berdasarkan perhitungan matematis ruang sampel', 'Empiris selalu bernilai 1, teoritis bernilai 0', 'Teoritis hanya untuk koin, empiris hanya untuk dadu', 'Keduanya sama persis dan tidak ada perbedaan konsep'], jawabanBenar: 0,
+      penjelasan: 'Peluang teoritis dihitung dari rasio n(A)/n(S) secara matematis, sedangkan peluang empiris dihitung dari hasil frekuensi percobaan nyata.'
+    },
+    {
+      kategori: 'Peluang Teoritis & Empiris', tingkat: 'sedang',
+      pertanyaan: 'Peluang seorang ksatria menangkis serangan goblin adalah 0,6. Jika diserang 50 kali, berapa kali ksatria tersebut diperkirakan BERHASIL menangkis?',
+      opsi: ['20 kali', '25 kali', '30 kali', '35 kali'], jawabanBenar: 2,
+      penjelasan: 'Fh = P x N = 0,6 x 50 = 30 kali penangkisan berhasil.'
+    },
+    {
+      kategori: 'Peluang Teoritis & Empiris', tingkat: 'sedang',
+      pertanyaan: 'Dalam 50 kali pengundian kartu, kartu pusaka muncul 15 kali. Berapa frekuensi harapan munculnya kartu pusaka jika percobaan diulang 200 kali?',
+      opsi: ['45 kali', '50 kali', '60 kali', '75 kali'], jawabanBenar: 2,
+      penjelasan: 'Peluang empiris = [15/50] = [3/10]. Untuk 200 kali: Fh = [3/10] x 200 = 60 kali.'
+    },
+    {
+      kategori: 'Kejadian Saling Lepas', tingkat: 'mudah',
+      pertanyaan: 'Sebuah dadu bersisi 6 dilempar sekali. Berapa peluang muncul mata dadu prima (2, 3, 5) ATAU mata dadu 4?',
+      opsi: ['[1/2]', '[2/3]', '[5/6]', '[1/3]'], jawabanBenar: 1,
+      penjelasan: 'A = {2, 3, 5} dan B = {4}. Karena saling lepas (A ∩ B = ∅), P(A ∪ B) = P(A) + P(B) = [3/6] + [1/6] = [4/6] = [2/3].'
+    },
+    {
+      kategori: 'Kejadian Saling Lepas', tingkat: 'sedang',
+      pertanyaan: 'Dari satu set kartu remi (52 kartu tanpa joker), diambil 1 kartu acak. Berapa peluang terambil kartu As ATAU kartu bergambar Raja (King)?',
+      opsi: ['[2/13]', '[1/13]', '[4/13]', '[8/52]'], jawabanBenar: 0,
+      penjelasan: 'Kartu As ada 4 dan King ada 4. Keduanya saling lepas. P(As ∪ King) = [4/52] + [4/52] = [8/52] = [2/13].'
+    },
+    {
+      kategori: 'Kejadian Saling Lepas', tingkat: 'sedang',
+      pertanyaan: 'Sebuah kotak berisi gulungan nomor 1 sampai 12. Satu nomor diambil acak. Berapa peluang terambil nomor ganjil ATAU nomor kelipatan 4?',
+      opsi: ['[2/3]', '[1/2]', '[3/4]', '[7/12]'], jawabanBenar: 2,
+      penjelasan: 'Ganjil = {1, 3, 5, 7, 9, 11} (6 angka). Kelipatan 4 = {4, 8, 12} (3 angka). Saling lepas. P = [6/12] + [3/12] = [9/12] = [3/4].'
+    },
+    {
+      kategori: 'Kejadian Saling Lepas', tingkat: 'sedang',
+      pertanyaan: 'Sebuah kantong berisi 10 bola bernomor 1 sampai 10. Diambil 1 bola acak. Berapa peluang terambil bola bernomor kelipatan 3 ATAU kelipatan 5?',
+      opsi: ['[2/5]', '[3/5]', '[1/2]', '[3/10]'], jawabanBenar: 2,
+      penjelasan: 'Kelipatan 3: {3, 6, 9} (3 bola). Kelipatan 5: {5, 10} (2 bola). Tidak ada nomor persekutuan (saling lepas). P = [3/10] + [2/10] = [5/10] = [1/2].'
+    },
+    {
+      kategori: 'Kejadian Saling Lepas', tingkat: 'mudah',
+      pertanyaan: 'Dua kejadian A dan B dikatakan saling lepas (mutually exclusive) jika...',
+      opsi: ['P(A ∩ B) = 0 (tidak mungkin terjadi bersamaan)', 'P(A) = P(B)', 'P(A ∩ B) = P(A) x P(B)', 'P(A ∪ B) = 1'], jawabanBenar: 0,
+      penjelasan: 'Kejadian saling lepas adalah dua kejadian yang tidak memiliki irisan sama sekali, artinya A ∩ B = ∅ sehingga P(A ∩ B) = 0.'
+    },
+    {
+      kategori: 'Kejadian Saling Lepas', tingkat: 'sedang',
+      pertanyaan: 'Dari 52 kartu bridge, diambil 1 kartu. Berapa peluang terambil kartu Hati (Heart) ATAU kartu Sekop (Spade)?',
+      opsi: ['[1/4]', '[1/2]', '[3/4]', '[13/52]'], jawabanBenar: 1,
+      penjelasan: 'Kartu Hati ada 13, kartu Sekop ada 13. Saling lepas: P = [13/52] + [13/52] = [26/52] = [1/2].'
+    },
+    {
+      kategori: 'Kejadian Saling Lepas', tingkat: 'sedang',
+      pertanyaan: 'Sebuah dadu dilempar sekali. Berapa peluang muncul mata dadu 1 ATAU mata dadu genap?',
+      opsi: ['[1/2]', '[2/3]', '[5/6]', '[1/3]'], jawabanBenar: 1,
+      penjelasan: 'Mata 1: {1} (1 buah). Genap: {2, 4, 6} (3 buah). Saling lepas: P = [1/6] + [3/6] = [4/6] = [2/3].'
+    },
+    {
+      kategori: 'Kejadian Saling Lepas', tingkat: 'sedang',
+      pertanyaan: 'Sebuah kantong berisi 4 kelereng merah, 5 hijau, dan 6 putih. Satu kelereng diambil acak. Berapa peluang terambil kelereng merah ATAU putih?',
+      opsi: ['[2/3]', '[3/5]', '[4/15]', '[1/3]'], jawabanBenar: 0,
+      penjelasan: 'Merah ada 4, Putih ada 6. Total = 15. Saling lepas: P = [4/15] + [6/15] = [10/15] = [2/3].'
+    },
+    {
+      kategori: 'Kejadian Saling Lepas', tingkat: 'sedang',
+      pertanyaan: 'Jika P(A) = 0,35 dan P(B) = 0,45 dengan A dan B adalah dua kejadian saling lepas, berapakah nilai P(A ∪ B)?',
+      opsi: ['0,1575', '0,70', '0,80', '0,10'], jawabanBenar: 2,
+      penjelasan: 'Untuk kejadian saling lepas: P(A ∪ B) = P(A) + P(B) = 0,35 + 0,45 = 0,80.'
+    },
+    {
+      kategori: 'Kejadian Saling Lepas', tingkat: 'sedang',
+      pertanyaan: 'Sebuah dadu dilempar sekali. Peluang muncul mata dadu kurang dari 3 ATAU lebih dari 4 adalah...',
+      opsi: ['[1/3]', '[1/2]', '[2/3]', '[5/6]'], jawabanBenar: 2,
+      penjelasan: 'Kurang dari 3: {1, 2} (2 mata). Lebih dari 4: {5, 6} (2 mata). Saling lepas: P = [2/6] + [2/6] = [4/6] = [2/3].'
+    },
+    {
+      kategori: 'Kejadian Saling Bebas', tingkat: 'sedang',
+      pertanyaan: 'Satu koin dan satu dadu dilempar bersamaan. Berapa peluang muncul sisi Angka pada koin DAN mata dadu lebih dari 4 pada dadu?',
+      opsi: ['[1/4]', '[1/6]', '[1/3]', '[1/12]'], jawabanBenar: 1,
+      penjelasan: 'Kejadian saling bebas: P(Angka) = [1/2]. Mata dadu > 4 adalah {5, 6}, maka P(>4) = [2/6] = [1/3]. P = [1/2] x [1/3] = [1/6].'
+    },
+    {
+      kategori: 'Kejadian Saling Bebas', tingkat: 'sedang',
+      pertanyaan: 'Peluang Priestess mengenai monster adalah 0,7 dan peluang Ksatria mengenainya adalah 0,8. Berapa peluang KEDUANYA berhasil menyerang monster bersamaan?',
+      opsi: ['0,75', '0,80', '0,56', '1,50'], jawabanBenar: 2,
+      penjelasan: 'Karena saling bebas: P(A ∩ B) = P(A) x P(B) = 0,7 x 0,8 = 0,56.'
+    },
+    {
+      kategori: 'Kejadian Saling Bebas', tingkat: 'sulit',
+      pertanyaan: 'Peti I berisi 3 batu rubi dan 2 safir. Peti II berisi 4 batu rubi dan 1 safir. Dari tiap peti diambil 1 batu secara terpisah. Berapa peluang terambil keduanya batu rubi?',
+      opsi: ['[12/25]', '[7/10]', '[3/5]', '[7/25]'], jawabanBenar: 0,
+      penjelasan: 'P(Rubi I) = [3/5], P(Rubi II) = [4/5]. Kejadian saling bebas: P = [3/5] x [4/5] = [12/25].'
+    },
+    {
+      kategori: 'Kejadian Saling Bebas', tingkat: 'sedang',
+      pertanyaan: 'Kotak berisi 5 bola merah dan 3 bola putih. Satu bola diambil acak, dicatat warnanya, lalu DIKEMBALIKAN ke kotak. Kemudian diambil 1 bola lagi. Berapa peluang terambil keduanya bola merah?',
+      opsi: ['[25/64]', '[5/14]', '[25/56]', '[5/8]'], jawabanBenar: 0,
+      penjelasan: 'Karena dikembalikan, pengambilan saling bebas. P(Merah 1) = [5/8], P(Merah 2) = [5/8]. Peluang keduanya merah = [5/8] x [5/8] = [25/64].'
+    },
+    {
+      kategori: 'Kejadian Saling Bebas', tingkat: 'mudah',
+      pertanyaan: 'Dua koin dilempar bersamaan satu kali. Berapa peluang muncul keduanya sisi Gambar?',
+      opsi: ['[1/2]', '[1/4]', '[3/4]', '[1/8]'], jawabanBenar: 1,
+      penjelasan: 'P(G1) = [1/2], P(G2) = [1/2]. Karena saling bebas: P = [1/2] x [1/2] = [1/4].'
+    },
+    {
+      kategori: 'Kejadian Saling Bebas', tingkat: 'sedang',
+      pertanyaan: 'Dua dadu dilempar bersamaan. Berapakah peluang muncul mata dadu 6 pada dadu pertama DAN mata dadu ganjil pada dadu kedua?',
+      opsi: ['[1/12]', '[1/6]', '[1/4]', '[5/36]'], jawabanBenar: 0,
+      penjelasan: 'P(Dadu1 = 6) = [1/6]. P(Dadu2 ganjil) = [3/6] = [1/2]. Saling bebas: P = [1/6] x [1/2] = [1/12].'
+    },
+    {
+      kategori: 'Kejadian Saling Bebas', tingkat: 'sedang',
+      pertanyaan: 'Peluang siswa A lulus ujian adalah 0,85 dan peluang siswa B lulus ujian adalah 0,90. Berapa peluang siswa A lulus TETAPI siswa B tidak lulus?',
+      opsi: ['0,085', '0,765', '0,050', '0,100'], jawabanBenar: 0,
+      penjelasan: 'P(A lulus) = 0,85. P(B tidak lulus) = 1 - 0,90 = 0,10. Saling bebas: P = 0,85 x 0,10 = 0,085.'
+    },
+    {
+      kategori: 'Kejadian Saling Bebas', tingkat: 'mudah',
+      pertanyaan: 'Dua kejadian A dan B dikatakan saling bebas (independent) apabila...',
+      opsi: ['Terjadinya kejadian A tidak mempengaruhi peluang terjadinya kejadian B', 'Kejadian A dan B tidak bisa terjadi bersamaan', 'Peluang A selalu sama dengan peluang B', 'Jumlah peluang A dan B harus sama dengan 1'], jawabanBenar: 0,
+      penjelasan: 'Dua kejadian saling bebas jika terjadinya salah satu kejadian tidak mengubah atau mempengaruhi probabilitas terjadinya kejadian yang lain.'
+    },
+    {
+      kategori: 'Kejadian Saling Bebas', tingkat: 'sedang',
+      pertanyaan: 'Dua dadu dilempar bersamaan. Berapa peluang muncul mata dadu prima pada dadu pertama DAN mata dadu prima pada dadu kedua?',
+      opsi: ['[1/2]', '[1/4]', '[1/6]', '[3/8]'], jawabanBenar: 1,
+      penjelasan: 'P(Prima 1) = [3/6] = [1/2]. P(Prima 2) = [3/6] = [1/2]. Saling bebas: P = [1/2] x [1/2] = [1/4].'
+    },
+    {
+      kategori: 'Kejadian Saling Bebas', tingkat: 'sulit',
+      pertanyaan: 'Kotak A berisi 2 bola hitam dan 3 putih. Kotak B berisi 3 bola hitam dan 1 putih. Diambil 1 bola dari masing-masing kotak. Berapa peluang terambil keduanya berbeda warna?',
+      opsi: ['[11/20]', '[9/20]', '[3/10]', '[7/20]'], jawabanBenar: 0,
+      penjelasan: 'Kasus 1 (Hitam A & Putih B): [2/5] x [1/4] = [2/20]. Kasus 2 (Putih A & Hitam B): [3/5] x [3/4] = [9/20]. Total P = [2/20] + [9/20] = [11/20].'
+    },
+    {
+      kategori: 'Peluang Gabungan Kejadian', tingkat: 'sedang',
+      pertanyaan: 'Sebuah dadu dilempar sekali. Berapa peluang muncul mata dadu ganjil ATAU mata dadu prima?',
+      opsi: ['[5/6]', '[1/2]', '[1/3]', '[2/3]'], jawabanBenar: 3,
+      penjelasan: 'Ganjil A = {1, 3, 5} (n=3). Prima B = {2, 3, 5} (n=3). Irisan A ∩ B = {3, 5} (n=2). P(A ∪ B) = P(A) + P(B) - P(A ∩ B) = [3/6] + [3/6] - [2/6] = [4/6] = [2/3].'
+    },
+    {
+      kategori: 'Peluang Gabungan Kejadian', tingkat: 'sedang',
+      pertanyaan: 'Dari 20 kartu bertuliskan nomor 1 sampai 20, diambil 1 kartu acak. Berapa peluang terambil kartu bernomor kelipatan 3 ATAU kelipatan 5?',
+      opsi: ['[1/2]', '[9/20]', '[2/5]', '[3/10]'], jawabanBenar: 1,
+      penjelasan: 'Kelipatan 3: {3,6,9,12,15,18} (6 buah). Kelipatan 5: {5,10,15,20} (4 buah). Kelipatan 15: {15} (1 buah). P = [6/20] + [4/20] - [1/20] = [9/20].'
+    },
+    {
+      kategori: 'Peluang Gabungan Kejadian', tingkat: 'sulit',
+      pertanyaan: 'Dari 52 kartu bridge, diambil 1 kartu acak. Berapa peluang terambil kartu bernomor Genap (2, 4, 6, 8, 10) ATAU kartu bergambar Hati (Heart)?',
+      opsi: ['[28/52]', '[8/13]', '[7/13]', '[1/2]'], jawabanBenar: 2,
+      penjelasan: 'Kartu genap: 5 nomor x 4 jenis = 20 kartu. Kartu hati: 13 kartu. Irisan (genap & hati): 5 kartu. P = [20/52] + [13/52] - [5/52] = [28/52] = [7/13].'
+    },
+    {
+      kategori: 'Peluang Gabungan Kejadian', tingkat: 'sedang',
+      pertanyaan: 'Sebuah dadu dilempar sekali. Berapa peluang muncul mata dadu genap (kelipatan 2) ATAU kelipatan 3?',
+      opsi: ['[2/3]', '[5/6]', '[1/2]', '[1/3]'], jawabanBenar: 0,
+      penjelasan: 'Genap A = {2, 4, 6} (n=3). Kelipatan 3 B = {3, 6} (n=2). Irisan A ∩ B = {6} (n=1). P(A ∪ B) = [3/6] + [2/6] - [1/6] = [4/6] = [2/3].'
+    },
+    {
+      kategori: 'Peluang Gabungan Kejadian', tingkat: 'sedang',
+      pertanyaan: 'Dari 52 kartu bridge, diambil 1 kartu acak. Berapa peluang terambil kartu As ATAU kartu berwarna Merah (Hati / Wajik)?',
+      opsi: ['[7/13]', '[15/26]', '[1/2]', '[8/13]'], jawabanBenar: 0,
+      penjelasan: 'As: 4 kartu. Merah: 26 kartu. Irisan (As Merah): 2 kartu. P = [4/52] + [26/52] - [2/52] = [28/52] = [7/13].'
+    },
+    {
+      kategori: 'Peluang Gabungan Kejadian', tingkat: 'sedang',
+      pertanyaan: 'Sebuah dadu bersisi 6 dilempar sekali. Berapa peluang muncul mata dadu prima ATAU mata dadu genap?',
+      opsi: ['[2/3]', '[5/6]', '[1/2]', '1'], jawabanBenar: 1,
+      penjelasan: 'Prima: {2, 3, 5} (3). Genap: {2, 4, 6} (3). Irisan: {2} (1). P = [3/6] + [3/6] - [1/6] = [5/6].'
+    },
+    {
+      kategori: 'Peluang Gabungan Kejadian', tingkat: 'mudah',
+      pertanyaan: 'Rumus penjumlahan umum untuk peluang gabungan dua kejadian sembarang A atau B (tidak saling lepas) adalah...',
+      opsi: ['P(A ∪ B) = P(A) + P(B) - P(A ∩ B)', 'P(A ∪ B) = P(A) + P(B)', 'P(A ∪ B) = P(A) x P(B)', 'P(A ∪ B) = P(A) - P(B)'], jawabanBenar: 0,
+      penjelasan: 'Rumus umum penjumlahan peluang adalah P(A ∪ B) = P(A) + P(B) - P(A ∩ B), di mana irisan dikurangkan agar tidak dihitung ganda.'
+    },
+    {
+      kategori: 'Peluang Gabungan Kejadian', tingkat: 'sedang',
+      pertanyaan: 'Dalam kelas beranggotakan 30 petualang, 18 mahir pedang, 12 mahir sihir, dan 6 mahir keduanya. Dipilih 1 orang acak. Berapa peluang terpilih petualang yang mahir pedang ATAU sihir?',
+      opsi: ['[4/5]', '[3/5]', '[2/3]', '[5/6]'], jawabanBenar: 0,
+      penjelasan: 'P(Pedang ∪ Sihir) = [18/30] + [12/30] - [6/30] = [24/30] = [4/5].'
+    },
+    {
+      kategori: 'Peluang Gabungan Kejadian', tingkat: 'sedang',
+      pertanyaan: 'Sebuah kartu diambil dari 30 kartu bernomor 1 sampai 30. Berapa peluang terambil kartu kelipatan 4 ATAU kelipatan 6?',
+      opsi: ['[1/3]', '[3/10]', '[2/5]', '[7/30]'], jawabanBenar: 0,
+      penjelasan: 'Kelipatan 4: {4,8,12,16,20,24,28} (7). Kelipatan 6: {6,12,18,24,30} (5). Kelipatan 12: {12,24} (2). P = [7/30] + [5/30] - [2/30] = [10/30] = [1/3].'
+    },
+    {
+      kategori: 'Peluang Gabungan Kejadian', tingkat: 'sulit',
+      pertanyaan: 'Dari 52 kartu bridge, diambil 1 kartu acak. Berapa peluang terambil kartu bergambar orang (J, Q, K) ATAU kartu Sekop (Spade)?',
+      opsi: ['[11/26]', '[25/52]', '[1/2]', '[6/13]'], jawabanBenar: 0,
+      penjelasan: 'Bergambar (J,Q,K): 12 kartu. Sekop: 13 kartu. Irisan (gambar sekop): 3 kartu. P = [12/52] + [13/52] - [3/52] = [22/52] = [11/26].'
     }
   ];
 
@@ -278,14 +592,15 @@
   const S = {
     gameState: 'menu', kol: 0, bar: 0, prevKol: 0, prevBar: 0, arahHadap: 'kanan',
     lives: 0, timeLeft: 0, score: 0, timerInterval: null, petaAktif: null,
-    antrianSoal: [], soalTerakhir: -1, soalAktif: null, barikadeAktif: null, sudahMenjawab: false,
+    soalAktif: null, barikadeAktif: null, sudahMenjawab: false,
     barikadeHancur: 0, jawabanBenar: 0, jawabanSalah: 0, sedangBergerak: false, waktuKebalApi: 0,
     totalBarikade: 0, anim: null, raf: 0, dpadInterval: null, tahan: [], benarPos: 0, benarTerakhir: false,
     monsters: [], monsterKalah: 0, waktuBisaAksi: 0, sedangDodge: 0, efekSerang: null, partikel: [], arahTerakhir: [1, 0],
     cache: null, obor: [], api: [], barikade: [], finish: null
   };
 
-  let $, canvas, ctx, cache, cctx, luz, lctx, sprPemain, imgPemain = null, imgPemainReady = false;
+  const $ = id => document.getElementById(id);
+  let canvas, ctx, cache, cctx, luz, lctx, sprPemain, imgPemain = null, imgPemainReady = false;
   let sprFront = null, sprBack = null;
   const sprFrames = [];
 
@@ -344,6 +659,7 @@
   }
 
   function bangunCache() {
+    if (!cctx || !cache) return;
     const p = S.petaAktif;
     S.obor = []; S.api = []; S.barikade = []; S.finish = null;
     cctx.clearRect(0, 0, cache.width, cache.height);
@@ -553,15 +869,15 @@
   }
 
   function gambarCahaya(t, sumber) {
-    const W = cache.width;
+    const W = cache.width, H = cache.height;
     // 1. Pendaran hangat di lantai bawah
     sumber.forEach(s => pendarLantai(ctx, s.x, s.y, s.r, s.warm));
 
     // 2. Lapisan Kegelapan Dungeon (Pekat di luar jangkauan cahaya karakter)
     lctx.globalCompositeOperation = 'source-over';
-    lctx.clearRect(0, 0, W, W);
+    lctx.clearRect(0, 0, W, H);
     lctx.fillStyle = 'rgba(20, 14, 25, ' + V.OPASITAS_VIGNETTE + ')';
-    lctx.fillRect(0, 0, W, W);
+    lctx.fillRect(0, 0, W, H);
 
     // 3. Potong lubang lentera karakter & sumber cahaya di dungeon
     lctx.globalCompositeOperation = 'destination-out';
@@ -572,7 +888,7 @@
   }
 
   function render(now) {
-    const t = REDUCE ? 0 : now, W = cache.width;
+    const t = REDUCE ? 0 : now, W = cache.width, H = cache.height;
     // posisi gambar pemain (interpolasi)
     let px = S.kol * T, py = S.bar * T, prog = 0;
     if (S.anim) {
@@ -581,7 +897,7 @@
       px = (a.fx + (a.tx - a.fx) * f) * T; py = (a.fy + (a.ty - a.fy) * f) * T;
       if (prog >= 1) { S.anim = null; S.sedangBergerak = false; px = S.kol * T; py = S.bar * T; }
     }
-    ctx.clearRect(0, 0, W, W);
+    ctx.clearRect(0, 0, W, H);
     ctx.drawImage(cache, 0, 0); // statis: lantai, dinding, dekorasi
     const sumber = [];
     S.obor.forEach(o => { // nyala obor + sumber cahaya redup
@@ -766,6 +1082,26 @@
     const nk = S.kol + dx, nb = S.bar + dy, v = (S.petaAktif[nb] || [])[nk];
     if (v === undefined || v === TILE.DINDING) return;
     if (v === TILE.BARIKADE) { S.barikadeAktif = { kolom: nk, baris: nb }; bukaSoal(); return; }
+
+    // Cek apakah ada monster hidup yang menempati tile tujuan (nk, nb) atau sedang melangkah ke sana
+    const monsterPenghadang = S.monsters && S.monsters.find(m => m.hidup && ((m.c === nk && m.r === nb) || (m.anim && m.anim.tx === nk && m.anim.ty === nb)));
+    if (monsterPenghadang) {
+      // Monster menghalangi jalan! Pemain terpental dan wajib menyerang (Spasi / Serang)
+      S.anim = { fx: S.kol, fy: S.bar, tx: nk, ty: nb, t0: now, dur: CONFIG.DURASI_LANGKAH_MS * 1.6, mundur: true };
+      S.sedangBergerak = true;
+      shake();
+      if (now >= S.waktuKebalApi) {
+        S.waktuKebalApi = now + 800;
+        S.lives--;
+        updateHUD();
+        umumkan('Monster menghadang jalan! Tekan SPASI atau tombol SERANG!');
+        if (S.lives <= 0) gameOver(false, 'monster');
+      } else {
+        umumkan('Monster menghadang jalan! Tekan SPASI atau tombol SERANG!');
+      }
+      return;
+    }
+
     if (v === TILE.API) {
       if (isApiAktif(now, nk, nb)) {
         // Pemain menabrak semburan api aktif: pantul balik dan kurangi nyawa
@@ -940,16 +1276,51 @@
   }
   function mulaiLoop() { cancelAnimationFrame(S.raf); S.raf = requestAnimationFrame(loop); }
 
-  // ====== SOAL ======
+  // ====== SISTEM ANTRIAN SOAL PERSISTEN (NON-REPEATING POOL) ======
+  // Menjamin soal yang sudah pernah muncul (dari awal game hingga kalah / main lagi)
+  // TIDAK AKAN MUNCUL KEMBALI sampai seluruh 60 soal dalam bank soal habis terpakai.
+  let antrianGlobalSoal = null;
+
+  function buatAntrianBaru() {
+    const semua = bankSoal.map((_, i) => i);
+    const antrian = acak(semua);
+    simpanAntrianSoal(antrian);
+    return antrian;
+  }
+
+  function muatAntrianSoal() {
+    try {
+      const tersimpan = localStorage.getItem(CONFIG.KUNCI_POOL_SOAL);
+      if (tersimpan) {
+        const arr = JSON.parse(tersimpan);
+        if (Array.isArray(arr) && arr.length > 0 && arr.every(i => Number.isInteger(i) && i >= 0 && i < bankSoal.length)) {
+          return arr;
+        }
+      }
+    } catch (_) {}
+    return buatAntrianBaru();
+  }
+
+  function simpanAntrianSoal(arr) {
+    try {
+      localStorage.setItem(CONFIG.KUNCI_POOL_SOAL, JSON.stringify(arr));
+    } catch (_) {}
+  }
+
   function ambilSoalBerikutnya() {
-    if (S.antrianSoal.length === 0) {
-      S.antrianSoal = acak(bankSoal.map((_, i) => i));
-      if (S.antrianSoal.length > 1 && S.antrianSoal[0] === S.soalTerakhir) { // hindari soal sama berurutan
-        const j = 1 + Math.floor(Math.random() * (S.antrianSoal.length - 1));
-        const tmp = S.antrianSoal[0]; S.antrianSoal[0] = S.antrianSoal[j]; S.antrianSoal[j] = tmp;
+    if (!antrianGlobalSoal || antrianGlobalSoal.length === 0) {
+      antrianGlobalSoal = muatAntrianSoal();
+      if (antrianGlobalSoal.length === 0) {
+        antrianGlobalSoal = buatAntrianBaru();
       }
     }
-    S.soalTerakhir = S.antrianSoal.shift();
+    // Hindari soal yang sama berturut-turut jika antrian baru saja di-reset
+    if (antrianGlobalSoal.length > 1 && antrianGlobalSoal[0] === S.soalTerakhir) {
+      const j = 1 + Math.floor(Math.random() * (antrianGlobalSoal.length - 1));
+      const tmp = antrianGlobalSoal[0]; antrianGlobalSoal[0] = antrianGlobalSoal[j]; antrianGlobalSoal[j] = tmp;
+    }
+    S.soalTerakhir = antrianGlobalSoal.shift();
+    simpanAntrianSoal(antrianGlobalSoal);
     return bankSoal[S.soalTerakhir];
   }
   function bukaSoal() {
@@ -1138,7 +1509,7 @@
     });
     const isMobile = window.innerWidth <= 900 || ('ontouchstart' in window);
     S.modeZoom = isMobile;
-    canvas.classList.toggle('mode-zoom', S.modeZoom);
+    if (canvas) canvas.classList.toggle('mode-zoom', S.modeZoom);
     const bz = $('btn-zoom');
     if (bz) bz.innerHTML = S.modeZoom ? '<span>🗺️</span>' : '<span>🔍</span>';
     bangunCache(); updateHUD();
@@ -1173,7 +1544,6 @@
 
   // ====== INISIALISASI (listener dipasang satu kali) ======
   document.addEventListener('DOMContentLoaded', function () {
-    $ = id => document.getElementById(id);
     initConfetti();
     canvas = $('gameCanvas'); ctx = canvas.getContext('2d');
     const W = KOLOM * T; canvas.width = W; canvas.height = BARIS * T;
@@ -1430,7 +1800,7 @@
     // Tombol Zoom / Mode Fokus HP (Z)
     function toggleZoom() {
       S.modeZoom = !S.modeZoom;
-      canvas.classList.toggle('mode-zoom', S.modeZoom);
+      if (canvas) canvas.classList.toggle('mode-zoom', S.modeZoom);
       const bz = $('btn-zoom');
       if (bz) {
         bz.innerHTML = S.modeZoom ? '<span>🗺️</span>' : '<span>🔍</span>';
