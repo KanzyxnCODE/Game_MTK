@@ -3,7 +3,7 @@
 
   // ====== KONFIGURASI (edit di sini) ======
   const CONFIG = {
-    TILE_SIZE: 40, NYAWA_AWAL: 3, WAKTU_AWAL: 300,
+    TILE_SIZE: 40, NYAWA_AWAL: 5, WAKTU_AWAL: 300,
     POIN_BARIKADE: 100, POIN_MONSTER: 50, COOLDOWN_AKSI_MS: 320,
     BONUS_WAKTU_PER_DETIK: 1, BONUS_NYAWA: 50,
     DURASI_LANGKAH_MS: 165, DELAY_TAHAN_TOMBOL_MS: 185, COOLDOWN_API_MS: 500,
@@ -286,6 +286,7 @@
   };
 
   let $, canvas, ctx, cache, cctx, luz, lctx, sprPemain, imgPemain = null, imgPemainReady = false;
+  let sprFront = null, sprBack = null;
   const sprFrames = [];
 
   // ====== PENGGAMBARAN STATIS (di-cache) ======
@@ -470,12 +471,17 @@
   function gambarPemain(g, px, py, prog) {
     g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(px + 20, py + 36, 11, 4, 0, 0, Math.PI * 2); g.fill();
     const now = performance.now();
-    // Animasi walk-cycle 5 frame saat melangkah, frame 1 saat diam berdiri
-    const frameIdx = S.sedangBergerak ? Math.floor((now / 115) % 5) : 1;
     const dw = 24, dh = 36;
-    const drawY = py + 2;
+    const bob = S.sedangBergerak ? -Math.abs(Math.sin((now / 115) * Math.PI)) * 2 : 0;
+    const drawX = px + (T - dw) / 2;
+    const drawY = py + 2 + bob;
 
-    if (imgPemainReady && sprFrames[frameIdx]) {
+    if (S.arahHadap === 'depan' && sprFront) {
+      g.drawImage(sprFront, drawX, drawY);
+    } else if (S.arahHadap === 'belakang' && sprBack) {
+      g.drawImage(sprBack, drawX, drawY);
+    } else if (imgPemainReady && sprFrames.length > 0) {
+      const frameIdx = S.sedangBergerak ? Math.floor((now / 115) % 5) : 1;
       const frame = sprFrames[frameIdx];
       if (S.arahHadap === 'kiri') {
         g.save();
@@ -484,12 +490,38 @@
         g.drawImage(frame, -dw / 2, drawY);
         g.restore();
       } else {
-        g.drawImage(frame, px + (T - dw) / 2, drawY);
+        g.drawImage(frame, drawX, drawY);
       }
     } else {
-      const bob = S.sedangBergerak ? -Math.abs(Math.sin(prog * Math.PI)) * V.AMPLITUDO_BOB_LANGKAH : 0, sz = 16 * V.SKALA_SPRITE;
+      const sz = 16 * V.SKALA_SPRITE;
       if (S.arahHadap === 'kiri') { g.save(); g.translate(px + T / 2, 0); g.scale(-1, 1); g.drawImage(sprPemain, -sz / 2, py + 4 + bob, sz, sz); g.restore(); }
       else g.drawImage(sprPemain, px + (T - sz) / 2, py + 4 + bob, sz, sz);
+    }
+
+    // Mini Floating Health Bar di atas Karakter (Liquid Glass & 5 Segmen Darah)
+    const barW = 26, barH = 4;
+    const barX = px + (T - barW) / 2;
+    const barY = py - 4 + bob;
+    g.fillStyle = 'rgba(15, 10, 24, 0.78)';
+    g.fillRect(barX - 1, barY - 1, barW + 2, barH + 2);
+    g.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+    g.lineWidth = 1;
+    g.strokeRect(barX - 0.5, barY - 0.5, barW + 1, barH + 1);
+
+    const totalHP = CONFIG.NYAWA_AWAL || 5;
+    const segGap = 1;
+    const segW = (barW - (totalHP - 1) * segGap) / totalHP;
+    for (let s = 0; s < totalHP; s++) {
+      const sx = barX + s * (segW + segGap);
+      if (s < S.lives) {
+        g.fillStyle = S.lives <= 1 ? '#ff1e4b' : (s < 2 ? '#f43f5e' : '#ef4444');
+        g.fillRect(sx, barY, segW, barH);
+        g.fillStyle = 'rgba(255, 255, 255, 0.55)';
+        g.fillRect(sx, barY, segW, 1.2);
+      } else {
+        g.fillStyle = 'rgba(50, 20, 30, 0.65)';
+        g.fillRect(sx, barY, segW, barH);
+      }
     }
   }
 
@@ -607,18 +639,25 @@
     });
 
     // Bayangan Ethereal saat Dodge
-    if (now < S.sedangDodge && imgPemainReady && sprFrames[1]) {
+    if (now < S.sedangDodge) {
       const dw = 24, dh = 36;
       ctx.save();
       ctx.globalAlpha = 0.45;
       const shadowX = S.prevKol * T + (T - dw) / 2;
       const shadowY = S.prevBar * T + 2;
-      if (S.arahHadap === 'kiri') {
-        ctx.translate(S.prevKol * T + T / 2, 0);
-        ctx.scale(-1, 1);
-        ctx.drawImage(sprFrames[1], -dw / 2, shadowY);
-      } else {
-        ctx.drawImage(sprFrames[1], shadowX, shadowY, dw, dh);
+      let shadowSpr = null;
+      if (S.arahHadap === 'depan') shadowSpr = sprFront;
+      else if (S.arahHadap === 'belakang') shadowSpr = sprBack;
+      else if (sprFrames.length > 1) shadowSpr = sprFrames[1];
+
+      if (shadowSpr) {
+        if (S.arahHadap === 'kiri') {
+          ctx.translate(S.prevKol * T + T / 2, 0);
+          ctx.scale(-1, 1);
+          ctx.drawImage(shadowSpr, -dw / 2, shadowY);
+        } else {
+          ctx.drawImage(shadowSpr, shadowX, shadowY, dw, dh);
+        }
       }
       ctx.restore();
     }
@@ -713,7 +752,10 @@
     const now = performance.now();
     if (now < (S.kunciInputSampai || 0)) return;
     if (dx || dy) S.arahTerakhir = [dx, dy];
-    if (dx) S.arahHadap = dx < 0 ? 'kiri' : 'kanan';
+    if (dx < 0) S.arahHadap = 'kiri';
+    else if (dx > 0) S.arahHadap = 'kanan';
+    else if (dy < 0) S.arahHadap = 'belakang';
+    else if (dy > 0) S.arahHadap = 'depan';
     const nk = S.kol + dx, nb = S.bar + dy, v = (S.petaAktif[nb] || [])[nk];
     if (v === undefined || v === TILE.DINDING) return;
     if (v === TILE.BARIKADE) { S.barikadeAktif = { kolom: nk, baris: nb }; bukaSoal(); return; }
@@ -747,7 +789,10 @@
     if (S.arahTerakhir && (S.arahTerakhir[0] !== 0 || S.arahTerakhir[1] !== 0)) {
       dx = S.arahTerakhir[0]; dy = S.arahTerakhir[1];
     } else {
-      dx = S.arahHadap === 'kiri' ? -1 : 1;
+      if (S.arahHadap === 'kiri') dx = -1;
+      else if (S.arahHadap === 'kanan') dx = 1;
+      else if (S.arahHadap === 'belakang') dy = -1;
+      else if (S.arahHadap === 'depan') dy = 1;
     }
 
     const targetK = S.kol + dx, targetB = S.bar + dy;
@@ -862,7 +907,11 @@
     }
   }
 
-  function hentikanDpad() { clearInterval(S.dpadInterval); S.dpadInterval = null; }
+  function hentikanDpad() {
+    clearInterval(S.dpadInterval);
+    S.dpadInterval = null;
+    document.querySelectorAll('.dp.aktif').forEach(b => b.classList.remove('aktif'));
+  }
   function periksaJebakanBerdiri(now) {
     if (S.gameState !== 'bermain' || !S.petaAktif || S.sedangBergerak) return;
     const v = (S.petaAktif[S.bar] || [])[S.kol];
@@ -958,15 +1007,120 @@
     }, 1000);
   }
 
+  // ====== SISTEM CONFETTI MERIAH ======
+  let confettiCanvas = null, cfCtx = null, confettiParticles = [], confettiRaf = null;
+  function initConfetti() {
+    confettiCanvas = $('confettiCanvas');
+    if (!confettiCanvas) return;
+    cfCtx = confettiCanvas.getContext('2d');
+    function resizeCf() {
+      if (!confettiCanvas) return;
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCf);
+    resizeCf();
+  }
+
+  function mulaiConfetti() {
+    if (!confettiCanvas) initConfetti();
+    if (!confettiCanvas || !cfCtx) return;
+    confettiCanvas.classList.remove('hidden');
+    cancelAnimationFrame(confettiRaf);
+    confettiParticles = [];
+
+    const W = confettiCanvas.width, H = confettiCanvas.height;
+    const WARNA_CONFETTI = ['#facc15', '#10b981', '#ec4899', '#06b6d4', '#f43f5e', '#a855f7', '#fb923c', '#ffffff'];
+
+    for (let i = 0; i < 90; i++) {
+      const ang = -Math.PI * (0.18 + Math.random() * 0.45);
+      const spd = 14 + Math.random() * 18;
+      confettiParticles.push({
+        x: W * 0.15 + (Math.random() - 0.5) * 60, y: H + 10,
+        vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd,
+        w: 9 + Math.random() * 9, h: 14 + Math.random() * 10,
+        warna: WARNA_CONFETTI[Math.floor(Math.random() * WARNA_CONFETTI.length)],
+        rot: Math.random() * Math.PI * 2, rotSpd: (Math.random() - 0.5) * 0.3,
+        rotY: Math.random() * Math.PI * 2, rotYSpd: 0.08 + Math.random() * 0.14,
+        drag: 0.985, grav: 0.4 + Math.random() * 0.15
+      });
+    }
+
+    for (let i = 0; i < 90; i++) {
+      const ang = -Math.PI * (0.55 + Math.random() * 0.45);
+      const spd = 14 + Math.random() * 18;
+      confettiParticles.push({
+        x: W * 0.85 + (Math.random() - 0.5) * 60, y: H + 10,
+        vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd,
+        w: 9 + Math.random() * 9, h: 14 + Math.random() * 10,
+        warna: WARNA_CONFETTI[Math.floor(Math.random() * WARNA_CONFETTI.length)],
+        rot: Math.random() * Math.PI * 2, rotSpd: (Math.random() - 0.5) * 0.3,
+        rotY: Math.random() * Math.PI * 2, rotYSpd: 0.08 + Math.random() * 0.14,
+        drag: 0.985, grav: 0.4 + Math.random() * 0.15
+      });
+    }
+
+    for (let i = 0; i < 70; i++) {
+      confettiParticles.push({
+        x: Math.random() * W, y: -20 - Math.random() * 300,
+        vx: (Math.random() - 0.5) * 3.5, vy: 2 + Math.random() * 5,
+        w: 8 + Math.random() * 8, h: 12 + Math.random() * 10,
+        warna: WARNA_CONFETTI[Math.floor(Math.random() * WARNA_CONFETTI.length)],
+        rot: Math.random() * Math.PI * 2, rotSpd: (Math.random() - 0.5) * 0.22,
+        rotY: Math.random() * Math.PI * 2, rotYSpd: 0.07 + Math.random() * 0.12,
+        drag: 0.995, grav: 0.24
+      });
+    }
+
+    function loopCf() {
+      cfCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+      const cH = confettiCanvas.height;
+      let masihAda = false;
+
+      for (let i = 0; i < confettiParticles.length; i++) {
+        const p = confettiParticles[i];
+        p.vx *= p.drag; p.vy = p.vy * p.drag + p.grav;
+        p.x += p.vx; p.y += p.vy;
+        p.rot += p.rotSpd; p.rotY += p.rotYSpd;
+
+        if (p.y < cH + 50) {
+          masihAda = true;
+          cfCtx.save();
+          cfCtx.translate(p.x, p.y);
+          cfCtx.rotate(p.rot);
+          cfCtx.scale(1, Math.cos(p.rotY));
+          cfCtx.fillStyle = p.warna;
+          cfCtx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          cfCtx.restore();
+        }
+      }
+
+      if (masihAda) {
+        confettiRaf = requestAnimationFrame(loopCf);
+      }
+    }
+    loopCf();
+  }
+
+  function hentikanConfetti() {
+    cancelAnimationFrame(confettiRaf);
+    if (cfCtx && confettiCanvas) {
+      cfCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+      confettiCanvas.classList.add('hidden');
+    }
+    confettiParticles = [];
+  }
+
   // ====== ALUR GAME ======
   function bacaRekor() { try { return parseInt(localStorage.getItem(CONFIG.KUNCI_HIGHSCORE), 10) || 0; } catch (e) { return 0; } }
   function simpanRekor(n) { try { localStorage.setItem(CONFIG.KUNCI_HIGHSCORE, String(n)); } catch (e) { /* localStorage diblokir */ } }
 
   function mulaiGame() {
+    hentikanConfetti();
     clearInterval(S.timerInterval); hentikanDpad(); cancelAnimationFrame(S.raf);
     S.petaAktif = MAP.map(r => r.slice()); // deep copy; MAP asli tidak berubah
     S.petaAktif.forEach((row, r) => row.forEach((v, c) => { if (v === TILE.START) { S.kol = c; S.bar = r; row[c] = TILE.LANTAI; } }));
-    S.prevKol = S.kol; S.prevBar = S.bar; S.arahHadap = 'kanan';
+    S.prevKol = S.kol; S.prevBar = S.bar; S.arahHadap = 'depan';
     S.totalBarikade = MAP.reduce((n, row) => n + row.filter(v => v === TILE.BARIKADE).length, 0);
     Object.assign(S, {
       lives: CONFIG.NYAWA_AWAL, timeLeft: CONFIG.WAKTU_AWAL, score: 0, barikadeHancur: 0, jawabanBenar: 0, jawabanSalah: 0,
@@ -996,9 +1150,11 @@
     if ($('res-monster')) $('res-monster').textContent = S.monsterKalah;
     $('res-benar').textContent = S.jawabanBenar; $('res-salah').textContent = S.jawabanSalah;
     tampil('res-rekor', rekorBaru); tampil('result-screen', true);
+    if (menang) mulaiConfetti(); else hentikanConfetti();
     $('btn-restart').focus();
   }
   function keMenu() {
+    hentikanConfetti();
     S.gameState = 'menu';['result-screen', 'game-screen'].forEach(id => tampil(id, false));
     $('highscore-menu').textContent = bacaRekor(); tampil('main-menu', true);
   }
@@ -1006,6 +1162,7 @@
   // ====== INISIALISASI (listener dipasang satu kali) ======
   document.addEventListener('DOMContentLoaded', function () {
     $ = id => document.getElementById(id);
+    initConfetti();
     canvas = $('gameCanvas'); ctx = canvas.getContext('2d');
     const W = KOLOM * T; canvas.width = W; canvas.height = BARIS * T;
     cache = document.createElement('canvas'); cache.width = W; cache.height = BARIS * T; cctx = cache.getContext('2d');
@@ -1044,7 +1201,45 @@
       }
       imgPemainReady = true;
     };
-    imgPemain.src = 'priestess_walk.png';
+    imgPemain.onerror = function () {
+      if (imgPemain.src.indexOf('Aset/') !== -1) {
+        imgPemain.src = 'priestess_walk.png';
+      }
+    };
+    imgPemain.src = 'Aset/priestess_walk.png';
+
+    const imgFront = new Image();
+    imgFront.onload = function () {
+      const fc = document.createElement('canvas');
+      fc.width = 24; fc.height = 36;
+      const fctx = fc.getContext('2d');
+      fctx.imageSmoothingEnabled = true;
+      fctx.drawImage(imgFront, 0, 0, imgFront.width, imgFront.height, 0, 0, 24, 36);
+      sprFront = fc;
+    };
+    imgFront.onerror = function () {
+      if (imgFront.src.indexOf('Aset/') !== -1) {
+        imgFront.src = 'priestess_front.png';
+      }
+    };
+    imgFront.src = 'Aset/priestess_front.png';
+
+    const imgBack = new Image();
+    imgBack.onload = function () {
+      const fc = document.createElement('canvas');
+      fc.width = 24; fc.height = 36;
+      const fctx = fc.getContext('2d');
+      fctx.imageSmoothingEnabled = true;
+      fctx.drawImage(imgBack, 0, 0, imgBack.width, imgBack.height, 0, 0, 24, 36);
+      sprBack = fc;
+    };
+    imgBack.onerror = function () {
+      if (imgBack.src.indexOf('Aset/') !== -1) {
+        imgBack.src = 'priestess_back.png';
+      }
+    };
+    imgBack.src = 'Aset/priestess_back.png';
+
     $('ikon-kunci').innerHTML = svgMatriks(IKON_KUNCI, { o: WARNA.outline, y: WARNA.emas }, 2);
 
     validateBankSoal(); validasiPeta();
@@ -1088,44 +1283,147 @@
     document.addEventListener('keyup', e => { const a = ARAH[e.key.toLowerCase()]; if (a) S.tahan = S.tahan.filter(x => x !== a); });
     window.addEventListener('blur', () => { S.tahan = []; hentikanDpad(); });
 
-    // D-Pad (pointerdown agar responsif di HP)
-    document.querySelectorAll('.dp').forEach(btn => {
-      const dx = +btn.dataset.dx, dy = +btn.dataset.dy;
-      btn.addEventListener('pointerdown', e => {
+    // D-Pad Virtual Thumbpad (Fluid Pointer Capture & Multi-Touch)
+    const dpadEl = $('dpad');
+    let pointerArahAktif = null;
+    let dxAktif = 0, dyAktif = 0;
+
+    function pasangArah(dx, dy, targetBtn) {
+      if (dx === dxAktif && dy === dyAktif && S.dpadInterval) return;
+      dxAktif = dx; dyAktif = dy;
+      document.querySelectorAll('.dp.aktif').forEach(b => b.classList.remove('aktif'));
+      if (targetBtn) targetBtn.classList.add('aktif');
+      if (navigator.vibrate) try { navigator.vibrate(12); } catch (_) {}
+      if (S.gameState === 'bermain') coba(dx, dy);
+      clearInterval(S.dpadInterval);
+      S.dpadInterval = setInterval(() => {
+        if (S.gameState === 'bermain' && (dxAktif !== 0 || dyAktif !== 0)) {
+          coba(dxAktif, dyAktif);
+        } else {
+          hentikanDpad();
+        }
+      }, CONFIG.DELAY_TAHAN_TOMBOL_MS);
+    }
+
+    if (dpadEl) {
+      dpadEl.addEventListener('pointerdown', e => {
         e.preventDefault();
         if (S.gameState !== 'bermain') return;
-        hentikanDpad(); coba(dx, dy);
-        S.dpadInterval = setInterval(() => { if (S.gameState === 'bermain') coba(dx, dy); else hentikanDpad(); }, CONFIG.DELAY_TAHAN_TOMBOL_MS);
+        const btn = e.target.closest('.dp');
+        if (!btn) return;
+        pointerArahAktif = e.pointerId;
+        try { dpadEl.setPointerCapture(e.pointerId); } catch (_) {}
+        pasangArah(+btn.dataset.dx, +btn.dataset.dy, btn);
       });
-      ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => btn.addEventListener(ev, hentikanDpad));
-      btn.addEventListener('contextmenu', e => e.preventDefault());
-    });
 
-    // Tombol Aksi Serang / Menghindar di HP
+      dpadEl.addEventListener('pointermove', e => {
+        if (e.pointerId !== pointerArahAktif || S.gameState !== 'bermain') return;
+        e.preventDefault();
+        const el = document.elementFromPoint(e.clientX, e.clientY);
+        const btn = el ? el.closest('.dp') : null;
+        if (btn) {
+          pasangArah(+btn.dataset.dx, +btn.dataset.dy, btn);
+        }
+      });
+
+      const lepasDpad = e => {
+        if (e.pointerId === pointerArahAktif) {
+          try { dpadEl.releasePointerCapture(e.pointerId); } catch (_) {}
+          pointerArahAktif = null;
+          dxAktif = 0; dyAktif = 0;
+          hentikanDpad();
+        }
+      };
+      dpadEl.addEventListener('pointerup', lepasDpad);
+      dpadEl.addEventListener('pointercancel', lepasDpad);
+      dpadEl.addEventListener('contextmenu', e => e.preventDefault());
+    }
+
+    // Tombol Aksi Serang / Menghindar di HP (Multi-Touch Terisolasi)
     const btnAksi = $('btn-aksi');
+    let pointerAksiAktif = null;
     if (btnAksi) {
       btnAksi.addEventListener('pointerdown', e => {
         e.preventDefault();
+        pointerAksiAktif = e.pointerId;
+        try { btnAksi.setPointerCapture(e.pointerId); } catch (_) {}
+        btnAksi.classList.add('aktif');
+        if (navigator.vibrate) try { navigator.vibrate(24); } catch (_) {}
         if (S.gameState === 'bermain') aksiPemain();
       });
+      const lepasAksi = e => {
+        if (e.pointerId === pointerAksiAktif) {
+          try { btnAksi.releasePointerCapture(e.pointerId); } catch (_) {}
+          pointerAksiAktif = null;
+          btnAksi.classList.remove('aktif');
+        }
+      };
+      btnAksi.addEventListener('pointerup', lepasAksi);
+      btnAksi.addEventListener('pointercancel', lepasAksi);
       btnAksi.addEventListener('contextmenu', e => e.preventDefault());
     }
 
-    // Tombol Layar Penuh (Fullscreen)
+    // Tombol Layar Penuh (Native Fullscreen + Pseudo-Fullscreen untuk HP/iOS)
+    function perbaruiIkonFs(aktif) {
+      const btnFs = $('btn-fullscreen');
+      if (!btnFs) return;
+      btnFs.innerHTML = aktif ? '<span>🗗</span>' : '<span>⛶</span>';
+      btnFs.title = aktif ? 'Keluar Layar Penuh (F / Esc)' : 'Layar Penuh (F)';
+    }
+
     function toggleLayarPenuh() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      } else if (document.exitFullscreen) {
-        document.exitFullscreen();
+      const doc = document;
+      const docEl = document.documentElement;
+      const isNative = !!(doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement);
+      const isPseudo = doc.body.classList.contains('layar-penuh-aktif');
+
+      if (!isNative && !isPseudo) {
+        const req = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.webkitRequestFullScreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
+        if (req) {
+          try {
+            const p = req.call(docEl);
+            if (p && p.then) {
+              p.then(() => {
+                if (screen.orientation && screen.orientation.lock) {
+                  screen.orientation.lock('landscape').catch(() => {});
+                }
+              }).catch(() => {
+                doc.body.classList.add('layar-penuh-aktif');
+                perbaruiIkonFs(true);
+              });
+            } else {
+              if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(() => {});
+              }
+            }
+          } catch (_) {
+            doc.body.classList.add('layar-penuh-aktif');
+            perbaruiIkonFs(true);
+          }
+        } else {
+          doc.body.classList.add('layar-penuh-aktif');
+          perbaruiIkonFs(true);
+        }
+        window.scrollTo(0, 1);
+      } else {
+        if (isNative) {
+          const exit = doc.exitFullscreen || doc.webkitExitFullscreen || doc.webkitCancelFullScreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
+          if (exit) exit.call(doc).catch(() => {});
+        }
+        doc.body.classList.remove('layar-penuh-aktif');
+        perbaruiIkonFs(false);
       }
     }
+
     const btnFs = $('btn-fullscreen');
     if (btnFs) {
       btnFs.addEventListener('click', toggleLayarPenuh);
-      document.addEventListener('fullscreenchange', () => {
-        const aktif = !!document.fullscreenElement;
-        btnFs.innerHTML = aktif ? '<span>🗗</span>' : '<span>⛶</span>';
-        btnFs.title = aktif ? 'Keluar Layar Penuh (F / Esc)' : 'Layar Penuh (F)';
+      btnFs.addEventListener('touchend', e => { e.preventDefault(); toggleLayarPenuh(); });
+      ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange'].forEach(ev => {
+        document.addEventListener(ev, () => {
+          const aktif = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.body.classList.contains('layar-penuh-aktif'));
+          perbaruiIkonFs(aktif);
+        });
       });
     }
     document.addEventListener('keydown', e => {
@@ -1134,6 +1432,13 @@
       }
     });
     keMenu();
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('autostart')) {
+      setTimeout(mulaiGame, 150);
+    }
+    if (urlParams.has('test_finish')) {
+      setTimeout(() => { mulaiGame(); gameOver(true, 'selamat'); }, 300);
+    }
   });
 
 })();

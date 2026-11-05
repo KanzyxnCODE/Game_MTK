@@ -1,0 +1,16 @@
+# Agent Customizations & Local Settings
+.agents/
+.agent/
+_agents/
+_agent/
+
+# OS & Editor Files
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+.vscode/
+
+# Screenshots & Local Tests
+*_screen.png
+

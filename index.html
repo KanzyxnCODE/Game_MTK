@@ -2,7 +2,11 @@
 <html lang="id">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#120c1e">
 <title>Labirin Peluang: Misi Penyelamatan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -51,15 +55,16 @@
     <canvas id="gameCanvas" role="img" aria-label="Labirin dungeon tampak atas. Gerakkan priestess menuju pintu keluar hijau, waspadai jebakan api di jalur, dan hancurkan barikade dengan menjawab soal peluang."></canvas>
   </div>
   <div id="kontrol-mobile">
-    <div id="dpad">
+    <div id="dpad" role="group" aria-label="Kontrol Arah">
       <button type="button" class="dp dp-atas" data-dx="0" data-dy="-1" aria-label="Atas"></button>
       <button type="button" class="dp dp-kiri" data-dx="-1" data-dy="0" aria-label="Kiri"></button>
+      <div class="dp-pusat" aria-hidden="true"></div>
       <button type="button" class="dp dp-kanan" data-dx="1" data-dy="0" aria-label="Kanan"></button>
       <button type="button" class="dp dp-bawah" data-dx="0" data-dy="1" aria-label="Bawah"></button>
     </div>
     <button type="button" id="btn-aksi" class="tombol-aksi" aria-label="Aksi Serang dan Hindari (Spasi)">
       <span class="aksi-ikon" aria-hidden="true">⚔</span>
-      <span class="aksi-label">SPASI</span>
+      <span class="aksi-label">SERANG</span>
     </button>
   </div>
   <div id="status-sr" class="sr-only" aria-live="polite"></div>
@@ -106,6 +111,7 @@
   </section>
 </div>
 
+  <canvas id="confettiCanvas" class="hidden" aria-hidden="true"></canvas>
 </main>
 <script src="script.js"></script>
 </body>
