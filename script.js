@@ -722,6 +722,13 @@
       }
     }
     gambarCahaya(t, sumber);
+    if (S.modeZoom) {
+      const normX = Math.max(12, Math.min(88, ((px + 20) / W) * 100));
+      const normY = Math.max(12, Math.min(88, ((py + 20) / W) * 100));
+      canvas.style.transformOrigin = normX.toFixed(1) + '% ' + normY.toFixed(1) + '%';
+    } else {
+      canvas.style.transformOrigin = 'center center';
+    }
   }
 
   // ====== HUD ======
@@ -1129,6 +1136,11 @@
       monsters: MONSTER_AWAL.map(m => ({ ...m, c: m.c0, r: m.r0, dir: 1, hidup: true, lastStepTime: 0, anim: null })),
       monsterKalah: 0, waktuBisaAksi: 0, sedangDodge: 0, efekSerang: null, partikel: []
     });
+    const isMobile = window.innerWidth <= 900 || ('ontouchstart' in window);
+    S.modeZoom = isMobile;
+    canvas.classList.toggle('mode-zoom', S.modeZoom);
+    const bz = $('btn-zoom');
+    if (bz) bz.innerHTML = S.modeZoom ? '<span>🗺️</span>' : '<span>🔍</span>';
     bangunCache(); updateHUD();
     ['main-menu', 'result-screen'].forEach(id => tampil(id, false));
     ['question-modal', 'feedback-modal'].forEach(id => tampil(id, false));
@@ -1415,6 +1427,23 @@
       }
     }
 
+    // Tombol Zoom / Mode Fokus HP (Z)
+    function toggleZoom() {
+      S.modeZoom = !S.modeZoom;
+      canvas.classList.toggle('mode-zoom', S.modeZoom);
+      const bz = $('btn-zoom');
+      if (bz) {
+        bz.innerHTML = S.modeZoom ? '<span>🗺️</span>' : '<span>🔍</span>';
+        bz.title = S.modeZoom ? 'Tampilan Peta Penuh (Z)' : 'Perbesar Karakter (Z)';
+      }
+      if (navigator.vibrate) try { navigator.vibrate(15); } catch (_) {}
+    }
+    const btnZoom = $('btn-zoom');
+    if (btnZoom) {
+      btnZoom.addEventListener('click', toggleZoom);
+      btnZoom.addEventListener('touchend', e => { e.preventDefault(); toggleZoom(); });
+    }
+
     const btnFs = $('btn-fullscreen');
     if (btnFs) {
       btnFs.addEventListener('click', toggleLayarPenuh);
@@ -1430,14 +1459,14 @@
       if (e.key.toLowerCase() === 'f' && !e.repeat && (S.gameState === 'bermain' || S.gameState === 'menu')) {
         toggleLayarPenuh();
       }
+      if (e.key.toLowerCase() === 'z' && !e.repeat && S.gameState === 'bermain') {
+        toggleZoom();
+      }
     });
     keMenu();
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('autostart')) {
       setTimeout(mulaiGame, 150);
-    }
-    if (urlParams.has('test_finish')) {
-      setTimeout(() => { mulaiGame(); gameOver(true, 'selamat'); }, 300);
     }
   });
 
