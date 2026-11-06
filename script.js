@@ -3,7 +3,7 @@
 
   // ====== KONFIGURASI (edit di sini) ======
   const CONFIG = {
-    TILE_SIZE: 40, NYAWA_AWAL: 5, WAKTU_AWAL: 300,
+    TILE_SIZE: 40, NYAWA_AWAL: 5, WAKTU_AWAL: 300, KESEMPATAN_BOSS: 3,
     POIN_BARIKADE: 100, POIN_MONSTER: 50, COOLDOWN_AKSI_MS: 320,
     BONUS_WAKTU_PER_DETIK: 1, BONUS_NYAWA: 50,
     DURASI_LANGKAH_MS: 165, DELAY_TAHAN_TOMBOL_MS: 185, COOLDOWN_API_MS: 500,
@@ -37,42 +37,55 @@
   // Menampilkan denah labirin penuh di layar monitor & mobile landscape tanpa ruang kosong.
   const MAP = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 5, 0, 0, 2, 0, 0, 3, 1, 0, 0, 0, 1, 0, 0, 3, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 5, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 0, 0, 3, 1, 0, 0, 0, 1, 0, 0, 3, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 0, 0, 1],
+    [1, 1, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1],
+    [1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 3, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 1, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 3, 0, 0, 0, 4, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
   ];
 
   // Peta Arena Boss Babak 2: The Chamber of Fate (28x16 Widescreen)
+  // Dilengkapi Pilar & Barikade Tembok Pelindung (Cover System) agar pemain bisa berlindung untuk menghitung soal dengan tenang
   const ARENA_BOSS = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
   ];
+
+  // Fungsi Deteksi Zona Perlindungan di Balik Tembok Arena Boss
+  function isPetakTerlindungi(c, r) {
+    if (S.babak !== 2) return false;
+    // 1. Bunker Suci Selatan (r >= 10 && c >= 10 && c <= 17)
+    if (r >= 10 && c >= 10 && c <= 17) return true;
+    // 2. Bastion Kiri / Barat (c <= 7 && r >= 5 && r <= 9)
+    if (c <= 7 && r >= 5 && r <= 9) return true;
+    // 3. Bastion Kanan / Timur (c >= 20 && r >= 5 && r <= 9)
+    if (c >= 20 && r >= 5 && r <= 9) return true;
+    return false;
+  }
 
   // Dekorasi peti harta di ruangan labirin
   const DEKORASI = [
@@ -90,21 +103,21 @@
     // Ruang 1: Penjaga Koridor Barikade 1 (Wajib Diserang)
     { id: 1, tipe: 'slime', c0: 4, r0: 2, axis: 'x', min: 3, max: 4, stepInterval: 1200 },
     // Ruang 2: Patroli Galeri Utara & Penjaga Barikade 2 (Wajib Diserang)
-    { id: 2, tipe: 'imp', c0: 12, r0: 1, axis: 'x', min: 7, max: 18, stepInterval: 1050 },
+    { id: 2, tipe: 'imp', c0: 12, r0: 1, axis: 'x', min: 10, max: 16, stepInterval: 1050 },
     { id: 3, tipe: 'slime', c0: 22, r0: 3, axis: 'x', min: 19, max: 24, stepInterval: 1100 },
     { id: 4, tipe: 'imp', c0: 25, r0: 3, axis: 'y', min: 2, max: 3, stepInterval: 1000 },
     // Ruang 3: Lorong Sayap Timur & Penjaga Barikade 3 (Wajib Diserang)
-    { id: 5, tipe: 'slime', c0: 23, r0: 6, axis: 'x', min: 21, max: 25, stepInterval: 1150 },
+    { id: 5, tipe: 'slime', c0: 24, r0: 6, axis: 'x', min: 22, max: 25, stepInterval: 1150 },
     { id: 6, tipe: 'imp', c0: 18, r0: 6, axis: 'x', min: 18, max: 19, stepInterval: 950 },
     // Ruang 4: Aula Besar Tengah & Penjaga Barikade 4 (Wajib Diserang)
-    { id: 7, tipe: 'imp', c0: 10, r0: 8, axis: 'x', min: 5, max: 15, stepInterval: 1100 },
-    { id: 8, tipe: 'slime', c0: 4, r0: 8, axis: 'y', min: 7, max: 8, stepInterval: 1000 },
+    { id: 7, tipe: 'imp', c0: 10, r0: 7, axis: 'x', min: 8, max: 11, stepInterval: 1100 },
+    { id: 8, tipe: 'slime', c0: 4, r0: 7, axis: 'y', min: 6, max: 8, stepInterval: 1000 },
     // Ruang 5: Lorong Bawah Barat Daya & Penjaga Barikade 5 (Wajib Diserang)
-    { id: 9, tipe: 'slime', c0: 3, r0: 11, axis: 'x', min: 1, max: 5, stepInterval: 1150 },
-    { id: 10, tipe: 'imp', c0: 14, r0: 12, axis: 'x', min: 13, max: 14, stepInterval: 900 },
+    { id: 9, tipe: 'slime', c0: 4, r0: 12, axis: 'x', min: 4, max: 7, stepInterval: 1150 },
+    { id: 10, tipe: 'imp', c0: 13, r0: 12, axis: 'x', min: 11, max: 14, stepInterval: 900 },
     // Ruang 6: Penjaga Sanctuary & Gerbang Portal Finish (Wajib Diserang)
-    { id: 11, tipe: 'imp', c0: 20, r0: 11, axis: 'x', min: 18, max: 25, stepInterval: 1000 },
-    { id: 12, tipe: 'slime', c0: 23, r0: 13, axis: 'x', min: 22, max: 23, stepInterval: 900 }
+    { id: 11, tipe: 'imp', c0: 22, r0: 12, axis: 'x', min: 21, max: 24, stepInterval: 1000 },
+    { id: 12, tipe: 'slime', c0: 23, r0: 14, axis: 'x', min: 22, max: 24, stepInterval: 900 }
   ];
   const KOLOM = MAP[0].length, BARIS = MAP.length;
 
@@ -611,7 +624,7 @@
 
   // ====== STATE ======
   const S = {
-    gameState: 'menu', babak: 1, boss: null, kol: 0, bar: 0, prevKol: 0, prevBar: 0, arahHadap: 'kanan',
+    gameState: 'menu', babak: 1, boss: null, kesempatanBoss: 3, maxKesempatanBoss: 3, kol: 0, bar: 0, prevKol: 0, prevBar: 0, arahHadap: 'kanan',
     lives: 0, timeLeft: 0, score: 0, timerInterval: null, petaAktif: null,
     soalAktif: null, barikadeAktif: null, sudahMenjawab: false,
     barikadeHancur: 0, jawabanBenar: 0, jawabanSalah: 0, sedangBergerak: false, waktuKebalApi: 0,
@@ -808,6 +821,16 @@
   function gambarPemain(g, px, py, prog) {
     g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(px + 20, py + 36, 11, 4, 0, 0, Math.PI * 2); g.fill();
     const now = performance.now();
+    // Indikator visual perlindungan di balik tembok pada Babak 2 (Cover Aura)
+    if (S.babak === 2 && isPetakTerlindungi(S.kol, S.bar)) {
+      g.save();
+      g.strokeStyle = 'rgba(56, 189, 248, ' + (0.5 + 0.3 * Math.sin(now * 0.006)) + ')';
+      g.lineWidth = 2.5;
+      g.beginPath();
+      g.ellipse(px + 20, py + 36, 15, 6, 0, 0, Math.PI * 2);
+      g.stroke();
+      g.restore();
+    }
     const dw = 24, dh = 36;
     const bob = S.sedangBergerak ? -Math.abs(Math.sin((now / 115) * Math.PI)) * 2 : 0;
     const drawX = px + (T - dw) / 2;
@@ -1474,6 +1497,11 @@
         badge.className = 'boss-badge';
       }
     }
+    const badgeKes = $('boss-kesempatan-badge');
+    if (badgeKes) {
+      badgeKes.textContent = '✨ ' + (S.kesempatanBoss || 0) + '/' + (S.maxKesempatanBoss || 3);
+      badgeKes.setAttribute('title', 'Sisa Kesempatan Bertarung: ' + S.kesempatanBoss + ' dari ' + S.maxKesempatanBoss);
+    }
   }
 
   function spawnBossMinions() {
@@ -1515,13 +1543,25 @@
     if (now >= b.waktuSerangBerikutnya) {
       const cooldown = b.hp <= 1 ? 2300 : 3500;
       b.waktuSerangBerikutnya = now + cooldown;
-      // Pilih 4-5 petak di sekitar pemain dan arena
       const kandidat = [];
-      for (let dx = -2; dx <= 2; dx++) {
-        for (let dy = -2; dy <= 2; dy++) {
-          const tc = S.kol + dx, tr = S.bar + dy;
-          if (tc >= 1 && tc < KOLOM - 1 && tr >= 1 && tr < BARIS - 1 && ARENA_BOSS[tr][tc] === 0) {
-            kandidat.push([tc, tr]);
+      const pemainDiCover = isPetakTerlindungi(S.kol, S.bar);
+      if (pemainDiCover) {
+        // Pemain sedang berlindung di balik tembok: letakkan pilar api di arena terbuka di depan cover
+        for (let c = 8; c <= 19; c++) {
+          for (let r = 3; r <= 9; r++) {
+            if (ARENA_BOSS[r] && ARENA_BOSS[r][c] === 0 && !isPetakTerlindungi(c, r)) {
+              kandidat.push([c, r]);
+            }
+          }
+        }
+      } else {
+        // Pemain di medan terbuka: targetkan petak sekitar pemain yang bukan area perlindungan
+        for (let dx = -2; dx <= 2; dx++) {
+          for (let dy = -2; dy <= 2; dy++) {
+            const tc = S.kol + dx, tr = S.bar + dy;
+            if (tc >= 1 && tc < KOLOM - 1 && tr >= 1 && tr < BARIS - 1 && ARENA_BOSS[tr][tc] === 0 && !isPetakTerlindungi(tc, tr)) {
+              kandidat.push([tc, tr]);
+            }
           }
         }
       }
@@ -1578,6 +1618,24 @@
       const pr = b.proyektil[i];
       pr.x += pr.vx;
       pr.y += pr.vy;
+
+      // Cek tabrakan dengan tembok pelindung (Cover Walls)
+      const ptc = Math.floor(pr.x / T), ptr = Math.floor(pr.y / T);
+      if (ptc >= 0 && ptc < KOLOM && ptr >= 0 && ptr < BARIS && ARENA_BOSS[ptr][ptc] === 1) {
+        // Bola sihir menghantam tembok perlindungan dan musnah!
+        for (let p = 0; p < 8; p++) {
+          const ang = Math.random() * Math.PI * 2;
+          S.partikel.push({
+            x: pr.x, y: pr.y,
+            vx: Math.cos(ang) * (1.5 + Math.random() * 2),
+            vy: Math.sin(ang) * (1.5 + Math.random() * 2),
+            warna: '#ec4899', t0: now, dur: 280
+          });
+        }
+        b.proyektil.splice(i, 1);
+        continue;
+      }
+
       // Cek tabrakan dengan pemain
       const px = S.kol * T + 20, py = S.bar * T + 20;
       if (Math.hypot(pr.x - px, pr.y - py) < 18) {
@@ -1595,6 +1653,18 @@
       // Hapus jika keluar arena atau habis durasi
       if (now >= pr.t0 + pr.dur || pr.x < T || pr.x > (KOLOM - 1) * T || pr.y < T || pr.y > (BARIS - 1) * T) {
         b.proyektil.splice(i, 1);
+      }
+    }
+
+    // Status Banner Tip (Cover vs Open Combat)
+    const elTip = document.querySelector('.banner-tip');
+    if (elTip) {
+      if (isPetakTerlindungi(S.kol, S.bar)) {
+        elTip.textContent = '🛡️ BERLINDUNG DI BALIK TEMBOK (AMAN UNTUK MENGHITUNG)';
+        elTip.style.color = '#38bdf8';
+      } else {
+        elTip.textContent = '⚔ MEDAN TERBUKA: Tebas Altar (A/B/C/D) yang Benar!';
+        elTip.style.color = '#c4b5fd';
       }
     }
   }
@@ -1801,9 +1871,12 @@
   function mulaiBabak2() {
     hentikanConfetti();
     tampil('transisi-modal', false);
+    tampil('boss-retry-modal', false);
     S.babak = 2;
     S.gameState = 'bermain';
-    S.lives = Math.min(CONFIG.NYAWA_AWAL, S.lives + 2); // bonus heal +2 nyawa
+    S.kesempatanBoss = S.kesempatanBoss || CONFIG.KESEMPATAN_BOSS;
+    S.maxKesempatanBoss = CONFIG.KESEMPATAN_BOSS;
+    S.lives = CONFIG.NYAWA_AWAL; // Pulihkan nyawa penuh (5 HP) saat masuk atau mengulang arena boss
     S.timeLeft += 120; // bonus waktu 2 menit
     tampil('hud-barikade-box', false);
     tampil('hud-boss', true);
@@ -1814,9 +1887,106 @@
     bangunCache();
     initBoss();
     updateHUD();
+    updateBossHUD();
     mulaiTimer();
     $('canvas-wrap').focus();
-    umumkan('Babak 2 Dimulai! Hancurkan Altar yang bernilai benar untuk meruntuhkan perisai Malakor!');
+    umumkan('Babak 2 Dimulai! Hancurkan Altar yang bernilai benar untuk meruntuhkan perisai Malakor! Sisa kesempatan: ' + S.kesempatanBoss);
+  }
+
+  function tumbangDiBoss(alasan) {
+    if (S.gameState === 'boss_revive' || S.gameState === 'hasil') return;
+    S.gameState = 'boss_revive';
+    clearInterval(S.timerInterval);
+    hentikanDpad();
+    cancelAnimationFrame(S.raf);
+    S.tahan = [];
+
+    S.kesempatanBoss--;
+    updateBossHUD();
+
+    const judul = $('boss-retry-judul');
+    if (judul) {
+      judul.textContent = alasan === 'waktu' ? 'WAKTU ARENA HABIS!' : 'TUMBANG DI ARENA BOSS!';
+    }
+    const pesan = $('boss-retry-pesan');
+    if (pesan) {
+      pesan.textContent = alasan === 'waktu'
+        ? 'Waktu habis di hadapan Malakor! Cahaya Roh Suci memberimu waktu tambahan dan kesempatan untuk bangkit kembali!'
+        : 'Serangan Malakor menumbangkanmu! Namun Berkah Roh Suci melindungimu dari kehancuran total.';
+    }
+
+    const tokensWrap = $('boss-retry-tokens');
+    if (tokensWrap) {
+      let h = '';
+      for (let i = 0; i < S.maxKesempatanBoss; i++) {
+        const aktif = i < S.kesempatanBoss;
+        h += `<span class="token-kristal ${aktif ? 'aktif' : 'padam'}" title="${aktif ? 'Kesempatan Tersedia' : 'Kesempatan Terpakai'}">${aktif ? '💠' : '⚪'}</span>`;
+      }
+      tokensWrap.innerHTML = h;
+    }
+
+    const counter = $('boss-retry-counter');
+    if (counter) {
+      counter.innerHTML = `Tersisa <strong>${S.kesempatanBoss}</strong> dari ${S.maxKesempatanBoss} Kesempatan`;
+    }
+
+    const btnBangkit = $('btn-boss-bangkit');
+    if (btnBangkit) {
+      btnBangkit.textContent = `✨ BANGKIT DENGAN PERISAI SUCI (Sisa ${S.kesempatanBoss}x)`;
+      btnBangkit.focus();
+    }
+
+    tampil('boss-retry-modal', true);
+    umumkan('Tumbang di Arena Boss. Sisa kesempatan: ' + S.kesempatanBoss + ' dari ' + S.maxKesempatanBoss);
+  }
+
+  function bangkitDiBoss() {
+    tampil('boss-retry-modal', false);
+    S.gameState = 'bermain';
+    S.lives = CONFIG.NYAWA_AWAL; // 5 HP
+    S.kol = 13; S.bar = 13; S.prevKol = 13; S.prevBar = 13; S.arahHadap = 'depan';
+    S.anim = null; S.sedangBergerak = false; S.tahan = [];
+
+    // Bersihkan rintangan proyektil dan pilar api agar aman
+    if (S.boss) {
+      S.boss.proyektil = [];
+      S.boss.telegraphs = [];
+    }
+
+    // Jika waktu kritis, berikan waktu minimal 75 detik
+    if (S.timeLeft < 75) S.timeLeft = 75;
+
+    // Perisai kebal suci selama 3.2 detik
+    const now = performance.now();
+    S.waktuKebalApi = now + 3200;
+
+    // Efek partikel kebangkitan suci emas & kristal berkilauan
+    for (let i = 0; i < 24; i++) {
+      const ang = (i / 24) * Math.PI * 2;
+      S.partikel.push({
+        x: S.kol * T + 20, y: S.bar * T + 20,
+        vx: Math.cos(ang) * (2 + Math.random() * 3),
+        vy: Math.sin(ang) * (2 + Math.random() * 3),
+        warna: ['#facc15', '#38bdf8', '#ffffff', '#e9d5ff', '#ec4899'][i % 5],
+        t0: now, dur: 600
+      });
+    }
+
+    updateHUD();
+    updateBossHUD();
+    mulaiTimer();
+    S.raf = requestAnimationFrame(loop);
+    $('canvas-wrap').focus();
+    umumkan('Bangkit dengan Perisai Suci! Bersiaplah menyerang altar!');
+  }
+
+  function ulangArenaBoss() {
+    tampil('boss-retry-modal', false);
+    const sisa = S.kesempatanBoss;
+    mulaiBabak2();
+    S.kesempatanBoss = sisa;
+    updateBossHUD();
+    umumkan('Mengulang Arena Boss. Sisa kesempatan: ' + S.kesempatanBoss);
   }
 
   function loop(now) {
@@ -2061,6 +2231,7 @@
     S.totalBarikade = MAP.reduce((n, row) => n + row.filter(v => v === TILE.BARIKADE).length, 0);
     Object.assign(S, {
       lives: CONFIG.NYAWA_AWAL, timeLeft: CONFIG.WAKTU_AWAL, score: 0, barikadeHancur: 0, jawabanBenar: 0, jawabanSalah: 0,
+      kesempatanBoss: CONFIG.KESEMPATAN_BOSS, maxKesempatanBoss: CONFIG.KESEMPATAN_BOSS,
       antrianSoal: [], soalTerakhir: -1, soalAktif: null, barikadeAktif: null, sudahMenjawab: false, sedangBergerak: false,
       waktuKebalApi: 0, anim: null, tahan: [], arahTerakhir: [1, 0],
       monsters: MONSTER_AWAL.map(m => ({ ...m, c: m.c0, r: m.r0, dir: 1, hidup: true, lastStepTime: 0, anim: null })),
@@ -2072,21 +2243,32 @@
     const bz = $('btn-zoom');
     if (bz) bz.innerHTML = S.modeZoom ? '<span>🗺️</span>' : '<span>🔍</span>';
     bangunCache(); updateHUD();
-    ['main-menu', 'result-screen'].forEach(id => tampil(id, false));
+    ['main-menu', 'result-screen', 'boss-retry-modal', 'transisi-modal'].forEach(id => tampil(id, false));
     ['question-modal', 'feedback-modal'].forEach(id => tampil(id, false));
     tampil('game-screen', true); S.gameState = 'bermain';
     mulaiTimer(); mulaiLoop(); $('canvas-wrap').focus();
   }
   function gameOver(menang, alasan) {
     if (S.gameState === 'hasil') return;
+    if (!menang && S.babak === 2 && S.kesempatanBoss > 1) {
+      tumbangDiBoss(alasan);
+      return;
+    }
+    if (!menang && S.babak === 2 && S.kesempatanBoss <= 1) {
+      alasan = 'boss';
+    }
     S.gameState = 'hasil'; clearInterval(S.timerInterval); hentikanDpad(); cancelAnimationFrame(S.raf); S.tahan = [];
     let skor = S.barikadeHancur * CONFIG.POIN_BARIKADE + S.monsterKalah * CONFIG.POIN_MONSTER;
     if (menang) skor += S.timeLeft * CONFIG.BONUS_WAKTU_PER_DETIK + S.lives * CONFIG.BONUS_NYAWA;
     S.score = skor;
     const rekorBaru = skor > bacaRekor(); if (rekorBaru) simpanRekor(skor);
-    ['question-modal', 'feedback-modal', 'game-screen'].forEach(id => tampil(id, false));
+    ['question-modal', 'feedback-modal', 'game-screen', 'boss-retry-modal', 'transisi-modal'].forEach(id => tampil(id, false));
     $('res-judul').textContent = menang ? 'MISI BERHASIL' : 'TERTANGKAP!';
-    $('res-alasan').textContent = menang ? 'Kamu menembus labirin dan membebaskan rekanmu!' : (alasan === 'monster' ? 'Kamu tumbang diserang oleh monster labirin!' : (alasan === 'waktu' ? 'Waktu habis.' : 'Nyawa habis.'));
+    $('res-alasan').textContent = menang
+      ? 'Kamu menembus labirin dan membebaskan rekanmu!'
+      : (alasan === 'boss'
+        ? 'Kamu telah mengerahkan segenap tenaga, namun seluruh 3x kesempatan di hadapan Malakor telah habis!'
+        : (alasan === 'monster' ? 'Kamu tumbang diserang oleh monster labirin!' : (alasan === 'waktu' ? 'Waktu habis.' : 'Nyawa habis.')));
     $('res-skor').textContent = skor; $('res-waktu').textContent = Math.max(0, S.timeLeft) + ' detik'; $('res-nyawa').textContent = Math.max(0, S.lives);
     $('res-barikade').textContent = S.barikadeHancur + '/' + S.totalBarikade;
     if ($('res-monster')) $('res-monster').textContent = S.monsterKalah;
@@ -2104,6 +2286,12 @@
   // ====== INISIALISASI (listener dipasang satu kali) ======
   document.addEventListener('DOMContentLoaded', function () {
     const btnBoss = $('btn-lanjut-boss'); if (btnBoss) btnBoss.addEventListener('click', mulaiBabak2);
+    const btnBangkit = $('btn-boss-bangkit'); if (btnBangkit) btnBangkit.addEventListener('click', bangkitDiBoss);
+    const btnUlang = $('btn-boss-ulang'); if (btnUlang) btnUlang.addEventListener('click', ulangArenaBoss);
+    const btnMenyerah = $('btn-boss-menyerah'); if (btnMenyerah) btnMenyerah.addEventListener('click', () => {
+      tampil('boss-retry-modal', false);
+      gameOver(false, 'boss');
+    });
     initConfetti();
     canvas = $('gameCanvas'); ctx = canvas.getContext('2d');
     const W = KOLOM * T; canvas.width = W; canvas.height = BARIS * T;

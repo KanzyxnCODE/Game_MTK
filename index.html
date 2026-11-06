@@ -49,6 +49,7 @@
     <div id="hud-boss" class="panel-hud boss-hud-panel hidden" role="region" aria-label="Status Boss">
       <div class="boss-hud-top">
         <span class="boss-nama">⚔ MALAKOR</span>
+        <span id="boss-kesempatan-badge" class="boss-badge kesempatan" title="Sisa Kesempatan Bertarung">✨ 3/3</span>
         <span id="boss-fase-badge" class="boss-badge">PERISAI TAKDIR</span>
       </div>
       <div class="boss-hp-track">
@@ -117,14 +118,45 @@
       Segel kuno labirin telah kamu hancurkan! Namun di balik portal, <b>Malakor - The Void Arbiter</b> telah bangkit menguasai singgasana kegelapan.
     </p>
     <div class="cutscene-box">
-      <b>⚔ TAKTIK PERTARUNGAN BOSS:</b>
+      <b>⚔ TAKTIK & BERKAH PERTARUNGAN BOSS:</b>
       <ul>
+        <li><b>3x Kesempatan Khusus:</b> Kamu memiliki <b>3x Kesempatan</b> bertarung di Arena Boss tanpa harus mengulang Babak 1!</li>
         <li><b>Pecahkan Perisai:</b> Baca teka-teki peluang di atas layar, hampiri dan tebas <b>Altar Kristal (A/B/C/D)</b> yang benar!</li>
         <li><b>Serang Saat Lemas:</b> Begitu perisai pecah, serang tubuh Malakor secepat mungkin sebelum perisai pulih!</li>
         <li><b>Hindari Api & Proyektil:</b> Waspadai petak berkedip merah sebelum pilar api kegelapan meledak!</li>
       </ul>
     </div>
     <button id="btn-lanjut-boss" class="tombol" type="button">MASUKI ARENA BOSS ⚔</button>
+  </div>
+</div>
+
+<!-- ===== MODAL KESEMPATAN ARENA BOSS (RETRY / REVIVE) ===== -->
+<div id="boss-retry-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="boss-retry-judul">
+  <div class="kotak panel liquid-cutscene">
+    <div class="cutscene-badge danger">★ PERTAHANAN GOYAH ★</div>
+    <h2 id="boss-retry-judul" class="cutscene-judul">TUMBANG DI ARENA BOSS!</h2>
+    <p id="boss-retry-pesan" class="cutscene-cerita">
+      Serangan Malakor menumbangkanmu! Namun Berkah Roh Suci melindungimu dari kehancuran total.
+    </p>
+    <div class="cutscene-box">
+      <div class="boss-retry-status">
+        <span class="retry-label">SISA KESEMPATAN ARENA BOSS:</span>
+        <div id="boss-retry-tokens" class="retry-tokens">
+          <span class="token-kristal aktif" id="token-k1">💠</span>
+          <span class="token-kristal aktif" id="token-k2">💠</span>
+          <span class="token-kristal padam" id="token-k3">⚪</span>
+        </div>
+        <p id="boss-retry-counter" class="retry-counter-text">Tersisa <strong>2</strong> dari 3 Kesempatan</p>
+      </div>
+      <p class="retry-tip">
+        💡 <b>Tips:</b> Gunakan tombol <b>BANGKIT KEMBALI</b> untuk bangkit dengan HP penuh dan perisai kebal 3 detik untuk melanjutkan duel!
+      </p>
+    </div>
+    <div class="retry-actions">
+      <button id="btn-boss-bangkit" class="tombol btn-primary-pulse" type="button">✨ BANGKIT DENGAN PERISAI SUCI</button>
+      <button id="btn-boss-ulang" class="tombol btn-secondary-glass" type="button">🔄 COBA ULANG ARENA BOSS</button>
+      <button id="btn-boss-menyerah" class="tombol btn-ghost" type="button">🏳 MENYERAH KE MENU</button>
+    </div>
   </div>
 </div>
 
