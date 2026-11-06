@@ -53,6 +53,27 @@
     [1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
   ];
+
+  // Peta Arena Boss Babak 2: The Chamber of Fate (28x16 Widescreen)
+  const ARENA_BOSS = [
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  ];
+
   // Dekorasi peti harta di ruangan labirin
   const DEKORASI = [
     { kolom: 1, baris: 1, jenis: 'peti' },
@@ -590,7 +611,7 @@
 
   // ====== STATE ======
   const S = {
-    gameState: 'menu', kol: 0, bar: 0, prevKol: 0, prevBar: 0, arahHadap: 'kanan',
+    gameState: 'menu', babak: 1, boss: null, kol: 0, bar: 0, prevKol: 0, prevBar: 0, arahHadap: 'kanan',
     lives: 0, timeLeft: 0, score: 0, timerInterval: null, petaAktif: null,
     soalAktif: null, barikadeAktif: null, sudahMenjawab: false,
     barikadeHancur: 0, jawabanBenar: 0, jawabanSalah: 0, sedangBergerak: false, waktuKebalApi: 0,
@@ -916,6 +937,41 @@
     S.barikade.forEach(b => gambarBarikade(ctx, b.c, b.r, now));
     if (S.finish) { gambarFinish(ctx, S.finish.c, S.finish.r, t); sumber.push({ x: S.finish.c * T + 20, y: S.finish.r * T + 20, r: 1.8, warm: 'rgba(57,255,136,0.18)', intensitas: 0.6 }); }
 
+
+    // Gambar Elemen Babak 2 (Boss Battle)
+    if (S.babak === 2 && S.boss) {
+      S.boss.altars.forEach(alt => {
+        gambarAltar(ctx, alt, now);
+        if (!alt.hancur) {
+          sumber.push({
+            x: alt.c * T + 20, y: alt.r * T + 20,
+            r: 2.2,
+            warm: 'rgba(56, 189, 248, 0.28)',
+            intensitas: 0.8
+          });
+        }
+      });
+      S.boss.telegraphs.forEach(tel => gambarTelegraph(ctx, tel, now));
+      gambarBoss(ctx, S.boss, now);
+      if (S.boss.hp > 0) {
+        sumber.push({
+          x: (S.boss.x + 1) * T, y: (S.boss.y + 1) * T,
+          r: 3.4,
+          warm: S.boss.status === 'enrage' ? 'rgba(239, 68, 68, 0.45)' : (S.boss.status === 'vulnerable' ? 'rgba(250, 204, 21, 0.4)' : 'rgba(168, 85, 247, 0.35)'),
+          intensitas: 0.95
+        });
+      }
+      S.boss.proyektil.forEach(pr => {
+        gambarProyektil(ctx, pr, now);
+        sumber.push({
+          x: pr.x * T + 20, y: pr.y * T + 20,
+          r: 1.1,
+          warm: 'rgba(236, 72, 153, 0.35)',
+          intensitas: 0.6
+        });
+      });
+    }
+
     // Gambar Monster
     S.monsters.forEach(m => {
       if (!m.hidup) return;
@@ -1118,7 +1174,7 @@
     S.prevKol = S.kol; S.prevBar = S.bar; S.kol = nk; S.bar = nb;
     S.anim = { fx: S.prevKol, fy: S.prevBar, tx: nk, ty: nb, t0: now, dur: CONFIG.DURASI_LANGKAH_MS, mundur: false };
     S.sedangBergerak = true;
-    if (v === TILE.FINISH) gameOver(true, 'selamat');
+    if (v === TILE.FINISH) { if (S.babak === 1) selesaiBabak1(); else gameOver(true, 'selamat'); }
   }
 
   // Aksi Serang / Menghindar (Spasi / Tombol Aksi)
@@ -1136,6 +1192,92 @@
       else if (S.arahHadap === 'kanan') dx = 1;
       else if (S.arahHadap === 'belakang') dy = -1;
       else if (S.arahHadap === 'depan') dy = 1;
+    }
+
+
+    // Logika Serangan Babak 2 (Boss Battle: Altar & Tubuh Boss)
+    if (S.babak === 2 && S.boss && S.boss.hp > 0) {
+      // 1. Cek serangan ke Altar Kristal
+      for (const altar of S.boss.altars) {
+        if (altar.hancur) continue;
+        const dist = Math.hypot(altar.c - S.kol, altar.r - S.bar);
+        if (dist <= 1.45) {
+          if (altar.pos === S.boss.jawabanBenarPos) {
+            // ALTAAR BENAR -> PERISAI PECAH!
+            altar.hancur = true;
+            S.boss.status = 'vulnerable';
+            S.boss.stunSampai = now + 5000;
+            S.score += 250;
+            updateHUD();
+            updateBossHUD();
+            shake();
+            for (let i = 0; i < 16; i++) {
+              const ang = (i / 16) * Math.PI * 2;
+              S.partikel.push({
+                x: altar.c * T + 20, y: altar.r * T + 20,
+                vx: Math.cos(ang) * (2 + Math.random() * 2),
+                vy: Math.sin(ang) * (2 + Math.random() * 2),
+                warna: ['#facc15', '#38bdf8', '#ffffff', '#e9d5ff'][i % 4],
+                t0: now, dur: 450
+              });
+            }
+            umumkan('Altar Benar! Perisai Malakor HANCUR! SERANG TUBUHNYA SEKARANG!');
+            return;
+          } else {
+            // ALTAAR SALAH
+            shake();
+            if (now >= S.waktuKebalApi) {
+              S.waktuKebalApi = now + 900;
+              S.lives--;
+              updateHUD();
+              umumkan('Jawaban salah! Altar meledak menyengatmu!');
+              if (S.lives <= 0) gameOver(false, 'monster');
+            } else {
+              umumkan('Jawaban salah! Altar memantulkan serangan!');
+            }
+            return;
+          }
+        }
+      }
+
+      // 2. Cek serangan ke Tubuh Boss Malakor
+      const distToBoss = Math.hypot((S.boss.x + 1) - S.kol, (S.boss.y + 1) - S.bar);
+      if (distToBoss <= 2.2) {
+        if (S.boss.status === 'vulnerable') {
+          S.boss.hp--;
+          S.score += 350;
+          shake();
+          updateBossHUD();
+          updateHUD();
+          for (let i = 0; i < 16; i++) {
+            const ang = Math.random() * Math.PI * 2;
+            S.partikel.push({
+              x: (S.boss.x + 1) * T, y: (S.boss.y + 1) * T,
+              vx: Math.cos(ang) * (2.5 + Math.random() * 2),
+              vy: Math.sin(ang) * (2.5 + Math.random() * 2),
+              warna: ['#ec4899', '#f43f5e', '#a855f7', '#facc15'][i % 4],
+              t0: now, dur: 400
+            });
+          }
+          if (S.boss.hp <= 0) {
+            bossKalah();
+            return;
+          }
+          S.boss.status = S.boss.hp <= 1 ? 'enrage' : 'shield';
+          S.boss.stunSampai = 0;
+          if (S.boss.hp === 3 || S.boss.hp === 2) {
+            spawnBossMinions();
+          }
+          bossSiapkanSoal();
+          updateBossHUD();
+          umumkan('Malakor terluka! Perisai Void diaktifkan kembali!');
+          return;
+        } else {
+          shake();
+          umumkan('Perisai Void kebal! Hancurkan Altar yang benar terlebih dahulu!');
+          return;
+        }
+      }
     }
 
     const targetK = S.kol + dx, targetB = S.bar + dy;
@@ -1192,7 +1334,7 @@
         S.prevKol = S.kol; S.prevBar = S.bar; S.kol = nk; S.bar = nb;
         S.anim = { fx: S.prevKol, fy: S.prevBar, tx: nk, ty: nb, t0: now, dur: 95, mundur: false };
         S.sedangBergerak = true;
-        if (v === TILE.FINISH) gameOver(true, 'selamat');
+        if (v === TILE.FINISH) { if (S.babak === 1) selesaiBabak1(); else gameOver(true, 'selamat'); }
         umumkan('Menghindar ke depan');
       } else {
         umumkan('Tebasan sihir suci');
@@ -1266,9 +1408,421 @@
       }
     }
   }
+
+  // ====== SISTEM BOSS BABAK 2: MALAKOR THE VOID ARBITER ======
+  function initBoss() {
+    S.boss = {
+      x: 13, y: 6.5,
+      hp: 5, maxHp: 5,
+      status: 'shield', // 'shield' | 'vulnerable' | 'enrage'
+      soalAktif: null,
+      altars: [
+        { id: 'A', c: 5, r: 4, pos: 0, teks: '', hancur: false },
+        { id: 'B', c: 22, r: 4, pos: 1, teks: '', hancur: false },
+        { id: 'C', c: 5, r: 11, pos: 2, teks: '', hancur: false },
+        { id: 'D', c: 22, r: 11, pos: 3, teks: '', hancur: false }
+      ],
+      jawabanBenarPos: 0,
+      stunSampai: 0,
+      waktuSerangBerikutnya: performance.now() + 2500,
+      waktuProyektilBerikutnya: performance.now() + 3800,
+      proyektil: [],
+      telegraphs: []
+    };
+    S.monsters = [];
+    bossSiapkanSoal();
+    updateBossHUD();
+  }
+
+  function bossSiapkanSoal() {
+    if (!S.boss) return;
+    const s = ambilSoalBerikutnya();
+    S.boss.soalAktif = s;
+    const urut = acak([0, 1, 2, 3]);
+    S.boss.jawabanBenarPos = urut.indexOf(s.jawabanBenar);
+    
+    S.boss.altars.forEach((altar, i) => {
+      const idxOpsi = urut[i];
+      altar.pos = i;
+      altar.idxOpsi = idxOpsi;
+      altar.teks = s.opsi[idxOpsi];
+      altar.hancur = false;
+    });
+
+    const elTeks = $('boss-teks-soal');
+    if (elTeks) notasi(elTeks, s.pertanyaan);
+    updateBossHUD();
+  }
+
+  function updateBossHUD() {
+    if (!S.boss) return;
+    const fill = $('boss-hp-fill');
+    if (fill) {
+      const pct = Math.max(0, Math.min(100, (S.boss.hp / S.boss.maxHp) * 100));
+      fill.style.width = pct + '%';
+    }
+    const badge = $('boss-fase-badge');
+    if (badge) {
+      if (S.boss.status === 'vulnerable') {
+        badge.textContent = 'PERISAI PECAH (SERANG!)';
+        badge.className = 'boss-badge vulnerable';
+      } else if (S.boss.hp <= 1) {
+        badge.textContent = 'OVERDRIVE / MENGAMUK';
+        badge.className = 'boss-badge enrage';
+      } else {
+        badge.textContent = 'PERISAI TAKDIR';
+        badge.className = 'boss-badge';
+      }
+    }
+  }
+
+  function spawnBossMinions() {
+    // Munculkan 2 minion (1 slime, 1 imp) untuk membantu boss
+    const minion1 = { id: 101, tipe: 'slime', c: 9, r: 8, c0: 9, r0: 8, axis: 'y', min: 7, max: 10, dir: 1, stepInterval: 1100, hidup: true, lastStepTime: 0, anim: null };
+    const minion2 = { id: 102, tipe: 'imp', c: 18, r: 8, c0: 18, r0: 8, axis: 'y', min: 7, max: 10, dir: -1, stepInterval: 1050, hidup: true, lastStepTime: 0, anim: null };
+    S.monsters.push(minion1, minion2);
+    // Efek partikel pemanggilan
+    const now = performance.now();
+    [minion1, minion2].forEach(m => {
+      for (let i = 0; i < 8; i++) {
+        const ang = (i / 8) * Math.PI * 2;
+        S.partikel.push({
+          x: m.c * T + 20, y: m.r * T + 20,
+          vx: Math.cos(ang) * 2, vy: Math.sin(ang) * 2,
+          warna: '#a855f7', t0: now, dur: 400
+        });
+      }
+    });
+    umumkan('Malakor memanggil bala bantuan bayangan!');
+  }
+
+  function updateBoss(now) {
+    if (S.gameState !== 'bermain' || S.babak !== 2 || !S.boss || S.boss.hp <= 0) return;
+    const b = S.boss;
+
+    // 1. Cek masa stun perisai
+    if (b.status === 'vulnerable') {
+      if (now >= b.stunSampai) {
+        // Stun habis, perisai pulih kembali!
+        b.status = b.hp <= 1 ? 'enrage' : 'shield';
+        bossSiapkanSoal();
+        shake();
+        umumkan('Perisai Malakor telah pulih kembali!');
+      }
+    }
+
+    // 2. Serangan Telegraphed Fire Pillars (Area Denial)
+    if (now >= b.waktuSerangBerikutnya) {
+      const cooldown = b.hp <= 1 ? 2300 : 3500;
+      b.waktuSerangBerikutnya = now + cooldown;
+      // Pilih 4-5 petak di sekitar pemain dan arena
+      const kandidat = [];
+      for (let dx = -2; dx <= 2; dx++) {
+        for (let dy = -2; dy <= 2; dy++) {
+          const tc = S.kol + dx, tr = S.bar + dy;
+          if (tc >= 1 && tc < KOLOM - 1 && tr >= 1 && tr < BARIS - 1 && ARENA_BOSS[tr][tc] === 0) {
+            kandidat.push([tc, tr]);
+          }
+        }
+      }
+      acak(kandidat);
+      const terpilih = kandidat.slice(0, b.hp <= 1 ? 5 : 3);
+      terpilih.forEach(pt => {
+        b.telegraphs.push({
+          c: pt[0], r: pt[1],
+          t0: now,
+          durPeringatan: 1100,
+          durAktif: 900
+        });
+      });
+    }
+
+    // Periksa dampak serangan telegraphed ke pemain
+    for (let i = b.telegraphs.length - 1; i >= 0; i--) {
+      const tel = b.telegraphs[i];
+      const aktif = (now >= tel.t0 + tel.durPeringatan) && (now < tel.t0 + tel.durPeringatan + tel.durAktif);
+      if (aktif && S.kol === tel.c && S.bar === tel.r) {
+        if (now >= S.waktuKebalApi) {
+          S.waktuKebalApi = now + 800;
+          S.lives--;
+          updateHUD();
+          shake();
+          umumkan('Terkena pilar api Malakor! Nyawa berkurang');
+          if (S.lives <= 0) gameOver(false, 'monster');
+        }
+      }
+      if (now >= tel.t0 + tel.durPeringatan + tel.durAktif) {
+        b.telegraphs.splice(i, 1);
+      }
+    }
+
+    // 3. Proyektil Bola Sihir Kegelapan (Void Orbs)
+    if (b.status !== 'vulnerable' && now >= b.waktuProyektilBerikutnya) {
+      const cooldownOrb = b.hp <= 1 ? 2400 : 3600;
+      b.waktuProyektilBerikutnya = now + cooldownOrb;
+      const bx = (b.x + 1) * T, by = (b.y + 1) * T;
+      const px = S.kol * T + 20, py = S.bar * T + 20;
+      const angle = Math.atan2(py - by, px - bx);
+      const spd = b.hp <= 1 ? 2.4 : 1.8;
+      b.proyektil.push({
+        x: bx, y: by,
+        vx: Math.cos(angle) * spd,
+        vy: Math.sin(angle) * spd,
+        t0: now,
+        dur: 4000
+      });
+    }
+
+    // Update gerakan proyektil
+    for (let i = b.proyektil.length - 1; i >= 0; i--) {
+      const pr = b.proyektil[i];
+      pr.x += pr.vx;
+      pr.y += pr.vy;
+      // Cek tabrakan dengan pemain
+      const px = S.kol * T + 20, py = S.bar * T + 20;
+      if (Math.hypot(pr.x - px, pr.y - py) < 18) {
+        if (now >= S.waktuKebalApi) {
+          S.waktuKebalApi = now + 900;
+          S.lives--;
+          updateHUD();
+          shake();
+          umumkan('Terkena bola sihir Malakor! Nyawa berkurang');
+          if (S.lives <= 0) gameOver(false, 'monster');
+        }
+        b.proyektil.splice(i, 1);
+        continue;
+      }
+      // Hapus jika keluar arena atau habis durasi
+      if (now >= pr.t0 + pr.dur || pr.x < T || pr.x > (KOLOM - 1) * T || pr.y < T || pr.y > (BARIS - 1) * T) {
+        b.proyektil.splice(i, 1);
+      }
+    }
+  }
+
+  function bossKalah() {
+    if (!S.boss) return;
+    S.boss.hp = 0;
+    updateBossHUD();
+    S.score += 1500;
+    shake();
+    const now = performance.now();
+    for (let i = 0; i < 48; i++) {
+      const ang = Math.random() * Math.PI * 2;
+      const spd = 2 + Math.random() * 6;
+      S.partikel.push({
+        x: (S.boss.x + 1) * T, y: (S.boss.y + 1) * T,
+        vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd,
+        warna: ['#facc15', '#ec4899', '#38bdf8', '#a855f7', '#ffffff'][i % 5],
+        t0: now, dur: 900
+      });
+    }
+    setTimeout(() => {
+      gameOver(true, 'boss');
+    }, 1100);
+  }
+
+  // Penggambaran Visual Elemen Boss Babak 2
+  function gambarAltar(g, altar, now) {
+    const x = altar.c * T, y = altar.r * T;
+    // Pedestal Batu
+    g.fillStyle = '#2e1c3b';
+    g.fillRect(x + 6, y + 20, 28, 16);
+    g.fillStyle = '#4a2d59';
+    g.fillRect(x + 8, y + 22, 24, 12);
+    g.fillStyle = '#a855f7';
+    g.fillRect(x + 18, y + 26, 4, 4);
+
+    if (!altar.hancur) {
+      // Kristal Mengambang
+      const bob = Math.sin(now * 0.005 + altar.pos) * 4;
+      const cy = y + 10 + bob;
+      g.save();
+      g.fillStyle = ['#38bdf8', '#ec4899', '#facc15', '#a855f7'][altar.pos % 4];
+      g.shadowColor = g.fillStyle;
+      g.shadowBlur = 10;
+      g.beginPath();
+      g.moveTo(x + 20, cy - 10);
+      g.lineTo(x + 27, cy);
+      g.lineTo(x + 20, cy + 10);
+      g.lineTo(x + 13, cy);
+      g.closePath();
+      g.fill();
+      g.restore();
+
+      // Label Huruf & Jawaban di atas Altar
+      g.save();
+      g.font = 'bold 11px monospace';
+      g.textAlign = 'center';
+      g.textBaseline = 'middle';
+      
+      // Background badge teks
+      const label = altar.id + ': ' + teksPolos(altar.teks || '');
+      const tw = g.measureText(label).width;
+      g.fillStyle = 'rgba(15, 10, 25, 0.82)';
+      g.strokeStyle = 'rgba(168, 85, 247, 0.6)';
+      g.lineWidth = 1;
+      g.fillRect(x + 20 - tw / 2 - 5, cy - 25, tw + 10, 14);
+      g.strokeRect(x + 20 - tw / 2 - 5, cy - 25, tw + 10, 14);
+      
+      g.fillStyle = '#fef08a';
+      g.fillText(label, x + 20, cy - 18);
+      g.restore();
+    }
+  }
+
+  function gambarTelegraph(g, tel, now) {
+    const x = tel.c * T, y = tel.r * T;
+    const isWarning = now < tel.t0 + tel.durPeringatan;
+    if (isWarning) {
+      // Lingkaran sihir merah berkedip
+      const p = (now - tel.t0) / tel.durPeringatan;
+      const alpha = 0.25 + 0.35 * Math.sin(now * 0.02);
+      g.save();
+      g.fillStyle = 'rgba(239, 68, 68, ' + alpha + ')';
+      g.strokeStyle = '#ef4444';
+      g.lineWidth = 2;
+      g.fillRect(x + 2, y + 2, T - 4, T - 4);
+      g.strokeRect(x + 2, y + 2, T - 4, T - 4);
+      g.restore();
+    } else {
+      // Pilar Api Void menyembur ke atas
+      g.save();
+      const flk = Math.sin(now * 0.03) * 3;
+      const grad = g.createLinearGradient(x + 20, y + 36, x + 20, y - 20);
+      grad.addColorStop(0, '#f43f5e');
+      grad.addColorStop(0.5, '#a855f7');
+      grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      g.fillStyle = grad;
+      g.fillRect(x + 6 + flk, y - 18, 28, 54);
+      g.restore();
+    }
+  }
+
+  function gambarProyektil(g, pr, now) {
+    g.save();
+    g.fillStyle = '#ec4899';
+    g.shadowColor = '#f43f5e';
+    g.shadowBlur = 12;
+    g.beginPath();
+    g.arc(pr.x, pr.y, 7, 0, Math.PI * 2);
+    g.fill();
+    g.fillStyle = '#ffffff';
+    g.beginPath();
+    g.arc(pr.x, pr.y, 3, 0, Math.PI * 2);
+    g.fill();
+    g.restore();
+  }
+
+  function gambarBoss(g, b, now) {
+    const bx = b.x * T, by = b.y * T;
+    const isEnrage = b.hp <= 1;
+    const isVulnerable = b.status === 'vulnerable';
+    const bob = Math.sin(now * 0.003) * 3;
+
+    g.save();
+    // 1. Bayangan Boss
+    g.fillStyle = 'rgba(0,0,0,0.45)';
+    g.beginPath();
+    g.ellipse(bx + 40, by + 74, 32, 10, 0, 0, Math.PI * 2);
+    g.fill();
+
+    // 2. Aura Mengamuk saat Enrage
+    if (isEnrage) {
+      g.fillStyle = 'rgba(239, 68, 68, ' + (0.2 + 0.15 * Math.sin(now * 0.01)) + ')';
+      g.beginPath();
+      g.arc(bx + 40, by + 40 + bob, 48, 0, Math.PI * 2);
+      g.fill();
+    }
+
+    // 3. Tubuh Jubah Malakor (Void Robe)
+    g.fillStyle = isVulnerable ? '#3b2d54' : '#1f132b';
+    g.fillRect(bx + 16, by + 24 + bob, 48, 50);
+    g.fillStyle = isEnrage ? '#dc2626' : (isVulnerable ? '#eab308' : '#7c3aed');
+    g.fillRect(bx + 26, by + 30 + bob, 28, 44);
+
+    // Tanduk Void / Mahkota Kegelapan
+    g.fillStyle = '#0f0817';
+    g.fillRect(bx + 18, by + 6 + bob, 8, 20);
+    g.fillRect(bx + 54, by + 6 + bob, 8, 20);
+    g.fillRect(bx + 24, by + 12 + bob, 32, 22);
+
+    // Mata Menyala
+    const eyeCol = isEnrage ? '#ef4444' : (isVulnerable ? '#facc15' : '#38bdf8');
+    g.fillStyle = eyeCol;
+    g.shadowColor = eyeCol;
+    g.shadowBlur = 8;
+    g.fillRect(bx + 30, by + 20 + bob, 6, 4);
+    g.fillRect(bx + 44, by + 20 + bob, 6, 4);
+    g.shadowBlur = 0;
+
+    // 4. Perisai Void (Bola Energi Pelindung)
+    if (!isVulnerable) {
+      g.strokeStyle = isEnrage ? 'rgba(239, 68, 68, 0.85)' : 'rgba(168, 85, 247, 0.75)';
+      g.lineWidth = 3;
+      g.fillStyle = isEnrage ? 'rgba(239, 68, 68, 0.15)' : 'rgba(168, 85, 247, 0.15)';
+      g.beginPath();
+      const rSh = 46 + Math.sin(now * 0.006) * 3;
+      g.arc(bx + 40, by + 40 + bob, rSh, 0, Math.PI * 2);
+      g.fill();
+      g.stroke();
+    } else {
+      // Efek Bintang Pusing saat Stun
+      for (let i = 0; i < 3; i++) {
+        const starAng = (now * 0.006) + (i * Math.PI * 2 / 3);
+        const sx = bx + 40 + Math.cos(starAng) * 28;
+        const sy = by + 12 + Math.sin(starAng) * 8 + bob;
+        g.fillStyle = '#facc15';
+        g.fillRect(sx - 3, sy - 3, 6, 6);
+      }
+    }
+
+    // 5. Mini Health Bar di Atas Kepala Boss
+    const hpPct = b.hp / b.maxHp;
+    g.fillStyle = 'rgba(0,0,0,0.6)';
+    g.fillRect(bx + 10, by - 6 + bob, 60, 6);
+    g.fillStyle = isEnrage ? '#ef4444' : (isVulnerable ? '#facc15' : '#a855f7');
+    g.fillRect(bx + 11, by - 5 + bob, 58 * hpPct, 4);
+
+    g.restore();
+  }
+
+  // Transisi dari Babak 1 ke Babak 2
+  function selesaiBabak1() {
+    S.gameState = 'transisi';
+    hentikanDpad();
+    S.tahan = [];
+    clearInterval(S.timerInterval);
+    mulaiConfetti();
+    tampil('transisi-modal', true);
+    const btn = $('btn-lanjut-boss');
+    if (btn) btn.focus();
+  }
+
+  function mulaiBabak2() {
+    hentikanConfetti();
+    tampil('transisi-modal', false);
+    S.babak = 2;
+    S.gameState = 'bermain';
+    S.lives = Math.min(CONFIG.NYAWA_AWAL, S.lives + 2); // bonus heal +2 nyawa
+    S.timeLeft += 120; // bonus waktu 2 menit
+    tampil('hud-barikade-box', false);
+    tampil('hud-boss', true);
+    tampil('boss-banner-soal', true);
+    S.petaAktif = ARENA_BOSS.map(r => r.slice());
+    S.kol = 13; S.bar = 13; S.prevKol = 13; S.prevBar = 13;
+    S.arahHadap = 'depan';
+    bangunCache();
+    initBoss();
+    updateHUD();
+    mulaiTimer();
+    $('canvas-wrap').focus();
+    umumkan('Babak 2 Dimulai! Hancurkan Altar yang bernilai benar untuk meruntuhkan perisai Malakor!');
+  }
+
   function loop(now) {
     S.raf = requestAnimationFrame(loop);
     updateMonster(now);
+    updateBoss(now);
     periksaJebakanBerdiri(now);
     periksaTabrakanMonster(now);
     const a = S.tahan[S.tahan.length - 1]; if (a) coba(a[0], a[1]); // tombol keyboard ditahan
@@ -1496,7 +2050,12 @@
   function mulaiGame() {
     hentikanConfetti();
     clearInterval(S.timerInterval); hentikanDpad(); cancelAnimationFrame(S.raf);
-    S.petaAktif = MAP.map(r => r.slice()); // deep copy; MAP asli tidak berubah
+    S.babak = 1;
+    S.boss = null;
+    tampil('hud-boss', false);
+    tampil('boss-banner-soal', false);
+    tampil('hud-barikade-box', true);
+    S.petaAktif = MAP.map(r => r.slice());
     S.petaAktif.forEach((row, r) => row.forEach((v, c) => { if (v === TILE.START) { S.kol = c; S.bar = r; row[c] = TILE.LANTAI; } }));
     S.prevKol = S.kol; S.prevBar = S.bar; S.arahHadap = 'depan';
     S.totalBarikade = MAP.reduce((n, row) => n + row.filter(v => v === TILE.BARIKADE).length, 0);
@@ -1544,6 +2103,7 @@
 
   // ====== INISIALISASI (listener dipasang satu kali) ======
   document.addEventListener('DOMContentLoaded', function () {
+    const btnBoss = $('btn-lanjut-boss'); if (btnBoss) btnBoss.addEventListener('click', mulaiBabak2);
     initConfetti();
     canvas = $('gameCanvas'); ctx = canvas.getContext('2d');
     const W = KOLOM * T; canvas.width = W; canvas.height = BARIS * T;

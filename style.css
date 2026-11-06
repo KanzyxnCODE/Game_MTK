@@ -104,6 +104,163 @@ h2{font-size:clamp(14px,4vw,20px)}
 #hud-hati svg.kritis{animation:kedip .5s steps(2) infinite;filter:drop-shadow(0 0 6px #ef4444)}
 #hud-waktu.genting{color:var(--salah);animation:kedip .5s steps(2) infinite;text-shadow:0 0 8px var(--salah)}
 
+/* ====== BOSS HUD & LIQUID BANNER (BABAK 2) ====== */
+.boss-hud-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 160px;
+  max-width: 240px;
+  padding: 3px 12px;
+  border-color: rgba(236, 72, 153, 0.45);
+  box-shadow: 0 8px 24px -4px rgba(236, 72, 153, 0.35), inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
+}
+.boss-hud-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 6px;
+}
+.boss-nama {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: #f472b6;
+  text-shadow: 0 0 8px rgba(244, 114, 182, 0.7);
+  letter-spacing: 0.5px;
+}
+.boss-badge {
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  background: rgba(168, 85, 247, 0.25);
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  color: #e9d5ff;
+}
+.boss-badge.enrage {
+  background: rgba(239, 68, 68, 0.35);
+  border-color: #ef4444;
+  color: #fca5a5;
+  animation: kedip .4s steps(2) infinite;
+}
+.boss-badge.vulnerable {
+  background: rgba(250, 204, 21, 0.35);
+  border-color: #facc15;
+  color: #fef08a;
+  animation: kedip .6s steps(2) infinite;
+}
+.boss-hp-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+.boss-hp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ec4899 0%, #f43f5e 50%, #facc15 100%);
+  border-radius: 9999px;
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.8);
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Banner Teka-Teki Soal Boss */
+.liquid-banner {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  width: calc(100% - 24px);
+  max-width: 680px;
+  background: linear-gradient(135deg, rgba(30, 20, 50, 0.88) 0%, rgba(20, 12, 35, 0.82) 100%);
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  border: 1px solid rgba(168, 85, 247, 0.45);
+  border-radius: 14px;
+  padding: 8px 16px;
+  box-shadow: 0 12px 36px -6px rgba(0, 0, 0, 0.65), 0 0 20px rgba(168, 85, 247, 0.25);
+  pointer-events: none;
+  text-align: center;
+  transition: all .25s ease-out;
+}
+.banner-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.banner-badge {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  color: var(--api-kuning);
+  text-shadow: 0 0 8px rgba(255, 210, 74, 0.6);
+  letter-spacing: 0.5px;
+}
+.banner-tip {
+  font-size: 11px;
+  color: #c4b5fd;
+  font-weight: 500;
+}
+.banner-teks {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  line-height: 1.35;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* Modal Cutscene Babak 2 */
+.liquid-cutscene {
+  max-width: 480px;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(45, 25, 75, 0.95) 0%, rgba(25, 14, 45, 0.92) 100%);
+  border-color: rgba(168, 85, 247, 0.55);
+  box-shadow: 0 24px 60px -10px rgba(0, 0, 0, 0.8), 0 0 40px rgba(168, 85, 247, 0.35);
+}
+.cutscene-badge {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  color: var(--api-kuning);
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  text-shadow: 0 0 12px rgba(255, 210, 74, 0.6);
+}
+.cutscene-judul {
+  color: #f3e8ff;
+  font-size: clamp(16px, 4.5vw, 22px);
+  margin-bottom: 10px;
+  text-shadow: 0 0 16px rgba(168, 85, 247, 0.6);
+}
+.cutscene-cerita {
+  font-size: 13px;
+  color: rgba(226, 232, 240, 0.9);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+.cutscene-box {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 12px;
+  color: #e2e8f0;
+  line-height: 1.45;
+  margin-bottom: 16px;
+}
+.cutscene-box ul {
+  margin: 6px 0 0 18px;
+  padding: 0;
+}
+.cutscene-box li {
+  margin-bottom: 5px;
+}
+
 #canvas-wrap{
   flex:1;min-height:0;min-width:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;
   outline:none;position:relative;z-index:1;overflow:hidden;
@@ -261,6 +418,41 @@ body.layar-penuh-aktif #game-screen{
     min-height: 30px;
     padding: 2px 8px;
     font-size: 10px;
+  }
+  .boss-hud-panel {
+    min-width: 120px;
+    max-width: 175px;
+    padding: 2px 8px;
+    gap: 2px;
+  }
+  .boss-nama {
+    font-size: 8px;
+  }
+  .boss-badge {
+    font-size: 7px;
+    padding: 1px 4px;
+  }
+  .boss-hp-track {
+    height: 5px;
+  }
+  .liquid-banner {
+    top: 38px;
+    max-width: 540px;
+    padding: 4px 10px;
+    border-radius: 10px;
+  }
+  .banner-top {
+    margin-bottom: 2px;
+  }
+  .banner-badge {
+    font-size: 8px;
+  }
+  .banner-tip {
+    font-size: 9px;
+  }
+  .banner-teks {
+    font-size: 11px;
+    line-height: 1.3;
   }
   #canvas-wrap {
     width: 100%;

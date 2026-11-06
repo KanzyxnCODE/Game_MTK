@@ -45,14 +45,32 @@
       <div class="panel-hud" id="hud-hati" role="img" aria-label="Nyawa"></div>
       <div class="panel-hud"><span class="sr-only">Waktu </span><span id="hud-waktu">05:00</span></div>
     </div>
+    <!-- Bar HP Boss Babak 2 (Liquid Glass) -->
+    <div id="hud-boss" class="panel-hud boss-hud-panel hidden" role="region" aria-label="Status Boss">
+      <div class="boss-hud-top">
+        <span class="boss-nama">⚔ MALAKOR</span>
+        <span id="boss-fase-badge" class="boss-badge">PERISAI TAKDIR</span>
+      </div>
+      <div class="boss-hp-track">
+        <div id="boss-hp-fill" class="boss-hp-fill" style="width: 100%;"></div>
+      </div>
+    </div>
     <div class="hud-grup">
-      <div class="panel-hud"><span id="ikon-kunci" aria-hidden="true"></span><span class="sr-only">Barikade </span><span id="hud-barikade">0/5</span></div>
+      <div class="panel-hud" id="hud-barikade-box"><span id="ikon-kunci" aria-hidden="true"></span><span class="sr-only">Barikade </span><span id="hud-barikade">0/5</span></div>
       <div class="panel-hud"><span class="sr-only">Skor </span><span id="hud-skor">0</span></div>
       <button type="button" id="btn-zoom" class="panel-hud tombol-fs" title="Perbesar Karakter / Peta (Z)" aria-label="Perbesar Tampilan"><span>🔍</span></button>
       <button type="button" id="btn-fullscreen" class="panel-hud tombol-fs" title="Layar Penuh (F)" aria-label="Layar Penuh"><span>⛶</span></button>
     </div>
   </header>
   <div id="canvas-wrap" tabindex="-1">
+    <!-- Banner Soal Boss Babak 2 -->
+    <div id="boss-banner-soal" class="liquid-banner hidden" role="region" aria-live="polite">
+      <div class="banner-top">
+        <span class="banner-badge">TEKA-TEKI TAKDIR MALAKOR</span>
+        <span class="banner-tip">Tebas Altar (A/B/C/D) yang Benar!</span>
+      </div>
+      <p id="boss-teks-soal" class="banner-teks"></p>
+    </div>
     <canvas id="gameCanvas" role="img" aria-label="Labirin dungeon tampak atas. Gerakkan priestess menuju pintu keluar hijau, waspadai jebakan api di jalur, dan hancurkan barikade dengan menjawab soal peluang."></canvas>
   </div>
   <div id="kontrol-mobile">
@@ -87,6 +105,26 @@
     <p id="fb-jawaban" class="teks-soal"></p>
     <p id="fb-penjelasan" class="teks-soal"></p>
     <button id="btn-lanjut" class="tombol" type="button">Lanjut</button>
+  </div>
+</div>
+
+<!-- ===== MODAL TRANSISI BABAK 2 (BOSS BATTLE) ===== -->
+<div id="transisi-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="transisi-judul">
+  <div class="kotak panel liquid-cutscene">
+    <div class="cutscene-badge">★ BABAK 1 SELESAI ★</div>
+    <h2 id="transisi-judul" class="cutscene-judul">MENUJU SINGGASANA TAKDIR</h2>
+    <p class="cutscene-cerita">
+      Segel kuno labirin telah kamu hancurkan! Namun di balik portal, <b>Malakor - The Void Arbiter</b> telah bangkit menguasai singgasana kegelapan.
+    </p>
+    <div class="cutscene-box">
+      <b>⚔ TAKTIK PERTARUNGAN BOSS:</b>
+      <ul>
+        <li><b>Pecahkan Perisai:</b> Baca teka-teki peluang di atas layar, hampiri dan tebas <b>Altar Kristal (A/B/C/D)</b> yang benar!</li>
+        <li><b>Serang Saat Lemas:</b> Begitu perisai pecah, serang tubuh Malakor secepat mungkin sebelum perisai pulih!</li>
+        <li><b>Hindari Api & Proyektil:</b> Waspadai petak berkedip merah sebelum pilar api kegelapan meledak!</li>
+      </ul>
+    </div>
+    <button id="btn-lanjut-boss" class="tombol" type="button">MASUKI ARENA BOSS ⚔</button>
   </div>
 </div>
 
