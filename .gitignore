@@ -14,3 +14,8 @@ Thumbs.db
 # Screenshots & Local Tests
 *_screen.png
 
+# Large Media Files (>100MB blocked by GitHub)
+*.mp4
+Aset/vidio ai/
+
+

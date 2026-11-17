@@ -831,6 +831,18 @@
       g.stroke();
       g.restore();
     }
+    // Efek aura perisai suci emas saat jeda menghindar setelah hit boss
+    if (S.babak === 2 && S.boss && S.boss.waktuJedaMenghindarSampai && now < S.boss.waktuJedaMenghindarSampai) {
+      g.save();
+      g.strokeStyle = 'rgba(250, 204, 21, ' + (0.7 + 0.3 * Math.sin(now * 0.012)) + ')';
+      g.lineWidth = 2.5;
+      g.beginPath();
+      g.arc(px + 20, py + 18 + bob, 22 + 2 * Math.sin(now * 0.008), 0, Math.PI * 2);
+      g.stroke();
+      g.fillStyle = 'rgba(250, 204, 21, ' + (0.12 + 0.06 * Math.sin(now * 0.012)) + ')';
+      g.fill();
+      g.restore();
+    }
     const dw = 24, dh = 36;
     const bob = S.sedangBergerak ? -Math.abs(Math.sin((now / 115) * Math.PI)) * 2 : 0;
     const drawX = px + (T - dw) / 2;
@@ -1230,6 +1242,12 @@
             altar.hancur = true;
             S.boss.status = 'vulnerable';
             S.boss.stunSampai = now + 5000;
+            // Bersihkan proyektil dan pilar api aktif agar lintasan menuju boss aman
+            S.boss.proyektil = [];
+            S.boss.telegraphs = [];
+            S.boss.waktuSerangBerikutnya = now + 5500;
+            S.boss.waktuProyektilBerikutnya = now + 6000;
+            S.waktuKebalApi = Math.max(S.waktuKebalApi, now + 1200);
             S.score += 250;
             updateHUD();
             updateBossHUD();
@@ -1272,28 +1290,48 @@
           shake();
           updateBossHUD();
           updateHUD();
-          for (let i = 0; i < 16; i++) {
+          for (let i = 0; i < 20; i++) {
             const ang = Math.random() * Math.PI * 2;
             S.partikel.push({
               x: (S.boss.x + 1) * T, y: (S.boss.y + 1) * T,
               vx: Math.cos(ang) * (2.5 + Math.random() * 2),
               vy: Math.sin(ang) * (2.5 + Math.random() * 2),
-              warna: ['#ec4899', '#f43f5e', '#a855f7', '#facc15'][i % 4],
-              t0: now, dur: 400
+              warna: ['#ec4899', '#f43f5e', '#a855f7', '#facc15', '#38bdf8'][i % 5],
+              t0: now, dur: 450
             });
           }
           if (S.boss.hp <= 0) {
             bossKalah();
             return;
           }
+
+          // ====== JEDA MENGHINDAR & PEMBERSIHAN ARENA ======
+          // 1. Bersihkan semua proyektil void & pilar api aktif di arena
+          S.boss.proyektil = [];
+          S.boss.telegraphs = [];
+
+          // 2. Berikan jeda serangan boss sebelum bisa menyerang kembali (3.5 - 4.5 detik)
+          const delaySerang = S.boss.hp <= 1 ? 3500 : 4200;
+          const delayOrb = S.boss.hp <= 1 ? 3800 : 4500;
+          S.boss.waktuSerangBerikutnya = now + delaySerang;
+          S.boss.waktuProyektilBerikutnya = now + delayOrb;
+
+          // 3. Jeda kebal & menghindar untuk pemain (3 detik penuh)
+          S.waktuKebalApi = now + 3000;
+          S.boss.waktuJedaMenghindarSampai = now + 3000;
+
+          // 4. Pulihkan perisai boss
           S.boss.status = S.boss.hp <= 1 ? 'enrage' : 'shield';
           S.boss.stunSampai = 0;
+
+          // 5. Minion spawn dengan jeda aktivasi agar tidak langsung menyerang
           if (S.boss.hp === 3 || S.boss.hp === 2) {
-            spawnBossMinions();
+            spawnBossMinions(now + 3000);
           }
+
           bossSiapkanSoal();
           updateBossHUD();
-          umumkan('Malakor terluka! Perisai Void diaktifkan kembali!');
+          umumkan('Malakor terpukul! Jeda 3 detik untuk menghindar ke balik tembok!');
           return;
         } else {
           shake();
@@ -1405,6 +1443,7 @@
         py = S.anim.fy + (S.anim.ty - S.anim.fy) * p;
       }
       if (Math.hypot(mx - px, my - py) < 0.65) {
+        if (m.spawnImmuneUntil && now < m.spawnImmuneUntil) continue;
         if (now < S.waktuKebalApi) continue; // Sedang kebal atau sedang dodge
         S.waktuKebalApi = now + 900;
         S.lives--; updateHUD(); shake();
@@ -1447,6 +1486,7 @@
       ],
       jawabanBenarPos: 0,
       stunSampai: 0,
+      waktuJedaMenghindarSampai: 0,
       waktuSerangBerikutnya: performance.now() + 2500,
       waktuProyektilBerikutnya: performance.now() + 3800,
       proyektil: [],
@@ -1504,10 +1544,11 @@
     }
   }
 
-  function spawnBossMinions() {
+  function spawnBossMinions(jedaAktifSampai) {
+    const delay = jedaAktifSampai || (performance.now() + 3000);
     // Munculkan 2 minion (1 slime, 1 imp) untuk membantu boss
-    const minion1 = { id: 101, tipe: 'slime', c: 9, r: 8, c0: 9, r0: 8, axis: 'y', min: 7, max: 10, dir: 1, stepInterval: 1100, hidup: true, lastStepTime: 0, anim: null };
-    const minion2 = { id: 102, tipe: 'imp', c: 18, r: 8, c0: 18, r0: 8, axis: 'y', min: 7, max: 10, dir: -1, stepInterval: 1050, hidup: true, lastStepTime: 0, anim: null };
+    const minion1 = { id: 101, tipe: 'slime', c: 9, r: 8, c0: 9, r0: 8, axis: 'y', min: 7, max: 10, dir: 1, stepInterval: 1100, hidup: true, lastStepTime: delay, spawnImmuneUntil: delay, anim: null };
+    const minion2 = { id: 102, tipe: 'imp', c: 18, r: 8, c0: 18, r0: 8, axis: 'y', min: 7, max: 10, dir: -1, stepInterval: 1050, hidup: true, lastStepTime: delay, spawnImmuneUntil: delay, anim: null };
     S.monsters.push(minion1, minion2);
     // Efek partikel pemanggilan
     const now = performance.now();
@@ -1517,7 +1558,7 @@
         S.partikel.push({
           x: m.c * T + 20, y: m.r * T + 20,
           vx: Math.cos(ang) * 2, vy: Math.sin(ang) * 2,
-          warna: '#a855f7', t0: now, dur: 400
+          warna: '#a855f7', t0: now, dur: 500
         });
       }
     });
@@ -1533,6 +1574,10 @@
       if (now >= b.stunSampai) {
         // Stun habis, perisai pulih kembali!
         b.status = b.hp <= 1 ? 'enrage' : 'shield';
+        b.waktuSerangBerikutnya = now + 2500;
+        b.waktuProyektilBerikutnya = now + 3000;
+        b.proyektil = [];
+        b.telegraphs = [];
         bossSiapkanSoal();
         shake();
         umumkan('Perisai Malakor telah pulih kembali!');
@@ -1540,7 +1585,7 @@
     }
 
     // 2. Serangan Telegraphed Fire Pillars (Area Denial)
-    if (now >= b.waktuSerangBerikutnya) {
+    if (b.status !== 'vulnerable' && now >= b.waktuSerangBerikutnya) {
       const cooldown = b.hp <= 1 ? 2300 : 3500;
       b.waktuSerangBerikutnya = now + cooldown;
       const kandidat = [];
@@ -1656,10 +1701,14 @@
       }
     }
 
-    // Status Banner Tip (Cover vs Open Combat)
+    // Status Banner Tip (Cover vs Open Combat vs Jeda Menghindar)
     const elTip = document.querySelector('.banner-tip');
     if (elTip) {
-      if (isPetakTerlindungi(S.kol, S.bar)) {
+      if (b.waktuJedaMenghindarSampai && now < b.waktuJedaMenghindarSampai) {
+        const sisaDetik = Math.max(1, Math.ceil((b.waktuJedaMenghindarSampai - now) / 1000));
+        elTip.textContent = '⚡ MALAKOR TERPUKUL! SEGERA MENGHINDAR KE BALIK TEMBOK! (' + sisaDetik + 's)';
+        elTip.style.color = '#facc15';
+      } else if (isPetakTerlindungi(S.kol, S.bar)) {
         elTip.textContent = '🛡️ BERLINDUNG DI BALIK TEMBOK (AMAN UNTUK MENGHITUNG)';
         elTip.style.color = '#38bdf8';
       } else {
@@ -1879,6 +1928,7 @@
     S.lives = CONFIG.NYAWA_AWAL; // Pulihkan nyawa penuh (5 HP) saat masuk atau mengulang arena boss
     S.timeLeft += 120; // bonus waktu 2 menit
     tampil('hud-barikade-box', false);
+    tampil('btn-hud-boss', false);
     tampil('hud-boss', true);
     tampil('boss-banner-soal', true);
     S.petaAktif = ARENA_BOSS.map(r => r.slice());
@@ -2213,18 +2263,75 @@
     confettiParticles = [];
   }
 
+  function hentikanVideoMenu() {
+    const vid = $('video-pembelajaran');
+    if (vid && !vid.paused) {
+      try { vid.pause(); } catch (e) {}
+    }
+  }
+
   // ====== ALUR GAME ======
   function bacaRekor() { try { return parseInt(localStorage.getItem(CONFIG.KUNCI_HIGHSCORE), 10) || 0; } catch (e) { return 0; } }
   function simpanRekor(n) { try { localStorage.setItem(CONFIG.KUNCI_HIGHSCORE, String(n)); } catch (e) { /* localStorage diblokir */ } }
 
+  // Shortcut Langsung Menguji Arena Boss (Babak 2)
+  function lompatKeBoss() {
+    hentikanConfetti();
+    hentikanVideoMenu();
+    clearInterval(S.timerInterval);
+    hentikanDpad();
+    cancelAnimationFrame(S.raf);
+    ['main-menu', 'result-screen', 'boss-retry-modal', 'transisi-modal', 'question-modal', 'feedback-modal'].forEach(id => tampil(id, false));
+    tampil('game-screen', true);
+    tampil('btn-hud-boss', false);
+    Object.assign(S, {
+      lives: CONFIG.NYAWA_AWAL,
+      timeLeft: CONFIG.WAKTU_AWAL,
+      score: 500,
+      barikadeHancur: 5,
+      totalBarikade: 5,
+      jawabanBenar: 5,
+      jawabanSalah: 0,
+      kesempatanBoss: CONFIG.KESEMPATAN_BOSS,
+      maxKesempatanBoss: CONFIG.KESEMPATAN_BOSS,
+      antrianSoal: [],
+      soalTerakhir: -1,
+      soalAktif: null,
+      barikadeAktif: null,
+      sudahMenjawab: false,
+      sedangBergerak: false,
+      waktuKebalApi: 0,
+      anim: null,
+      tahan: [],
+      arahTerakhir: [0, -1],
+      monsters: [],
+      monsterKalah: 0,
+      waktuBisaAksi: 0,
+      sedangDodge: 0,
+      efekSerang: null,
+      partikel: []
+    });
+    const isMobile = window.innerWidth <= 900 || ('ontouchstart' in window);
+    S.modeZoom = isMobile;
+    if (canvas) canvas.classList.toggle('mode-zoom', S.modeZoom);
+    const bz = $('btn-zoom');
+    if (bz) bz.innerHTML = S.modeZoom ? '<span>🗺️</span>' : '<span>🔍</span>';
+    mulaiBabak2();
+    mulaiLoop();
+    $('canvas-wrap').focus();
+    umumkan('⚡ MODE UJI COBA: Langsung memasuki pertarungan Boss Malakor (Babak 2)!');
+  }
+
   function mulaiGame() {
     hentikanConfetti();
+    hentikanVideoMenu();
     clearInterval(S.timerInterval); hentikanDpad(); cancelAnimationFrame(S.raf);
     S.babak = 1;
     S.boss = null;
     tampil('hud-boss', false);
     tampil('boss-banner-soal', false);
     tampil('hud-barikade-box', true);
+    tampil('btn-hud-boss', true);
     S.petaAktif = MAP.map(r => r.slice());
     S.petaAktif.forEach((row, r) => row.forEach((v, c) => { if (v === TILE.START) { S.kol = c; S.bar = r; row[c] = TILE.LANTAI; } }));
     S.prevKol = S.kol; S.prevBar = S.bar; S.arahHadap = 'depan';
@@ -2286,6 +2393,9 @@
   // ====== INISIALISASI (listener dipasang satu kali) ======
   document.addEventListener('DOMContentLoaded', function () {
     const btnBoss = $('btn-lanjut-boss'); if (btnBoss) btnBoss.addEventListener('click', mulaiBabak2);
+    const btnShortcutBoss = $('btn-shortcut-boss'); if (btnShortcutBoss) btnShortcutBoss.addEventListener('click', lompatKeBoss);
+    const btnHudBoss = $('btn-hud-boss'); if (btnHudBoss) btnHudBoss.addEventListener('click', lompatKeBoss);
+    const btnResultBoss = $('btn-result-boss'); if (btnResultBoss) btnResultBoss.addEventListener('click', lompatKeBoss);
     const btnBangkit = $('btn-boss-bangkit'); if (btnBangkit) btnBangkit.addEventListener('click', bangkitDiBoss);
     const btnUlang = $('btn-boss-ulang'); if (btnUlang) btnUlang.addEventListener('click', ulangArenaBoss);
     const btnMenyerah = $('btn-boss-menyerah'); if (btnMenyerah) btnMenyerah.addEventListener('click', () => {
@@ -2574,16 +2684,22 @@
       });
     }
     document.addEventListener('keydown', e => {
-      if (e.key.toLowerCase() === 'f' && !e.repeat && (S.gameState === 'bermain' || S.gameState === 'menu')) {
+      const k = e.key.toLowerCase();
+      if (k === 'f' && !e.repeat && (S.gameState === 'bermain' || S.gameState === 'menu')) {
         toggleLayarPenuh();
       }
-      if (e.key.toLowerCase() === 'z' && !e.repeat && S.gameState === 'bermain') {
+      if (k === 'z' && !e.repeat && S.gameState === 'bermain') {
         toggleZoom();
+      }
+      if (k === 'b' && !e.repeat && (S.gameState === 'bermain' || S.gameState === 'menu' || S.gameState === 'hasil')) {
+        lompatKeBoss();
       }
     });
     keMenu();
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('autostart')) {
+    if (urlParams.has('boss') || window.location.hash === '#boss') {
+      setTimeout(lompatKeBoss, 150);
+    } else if (urlParams.has('autostart')) {
       setTimeout(mulaiGame, 150);
     }
   });

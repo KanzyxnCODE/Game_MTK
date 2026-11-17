@@ -28,13 +28,20 @@
       <li>Waspadai jebakan api di jalur! Lewati saat padam dan hindari saat berkobar.</li>
       <li>Tabrak barikade lalu jawab soal peluang untuk membukanya.</li>
       <li>Tekan <b>F</b> (atau tombol ⛶) untuk mode layar penuh.</li>
+      <li>Tekan <b>B</b> (atau tombol ⚔️ BOSS) untuk <b>shortcut langsung lawan Boss Malakor</b>.</li>
     </ul>
-    <!-- Ganti VIDEO_ID_DISINI dengan ID video YouTube (bagian setelah "v=" pada link video). -->
     <div class="video-responsive">
-      <iframe src="https://www.youtube-nocookie.com/embed/VIDEO_ID_DISINI" title="Video pembelajaran Peluang" loading="lazy" allowfullscreen></iframe>
+      <video id="video-pembelajaran" controls playsinline preload="metadata">
+        <source src="Aset/vidio%20ai/hasil%20akhir%20yang%20sudah%20di%20revisi%20bersih.mp4" type="video/mp4">
+        <source src="Aset/vidio ai/hasil akhir yang sudah di revisi bersih.mp4" type="video/mp4">
+        Browser Anda tidak mendukung pemutaran video langsung.
+      </video>
     </div>
     <p class="rekor">High Score: <strong id="highscore-menu">0</strong></p>
-    <button id="btn-mulai" class="tombol" type="button">MULAI PETUALANGAN</button>
+    <div class="baris-tombol">
+      <button id="btn-mulai" class="tombol" type="button">MULAI PETUALANGAN</button>
+      <button id="btn-shortcut-boss" class="tombol btn-boss-shortcut" type="button" title="Langsung uji coba lawan Boss Malakor (Shortcut B)">⚔️ UJI COBA BOSS (BABAK 2)</button>
+    </div>
   </section>
 </div>
 
@@ -59,6 +66,7 @@
     <div class="hud-grup">
       <div class="panel-hud" id="hud-barikade-box"><span id="ikon-kunci" aria-hidden="true"></span><span class="sr-only">Barikade </span><span id="hud-barikade">0/5</span></div>
       <div class="panel-hud"><span class="sr-only">Skor </span><span id="hud-skor">0</span></div>
+      <button type="button" id="btn-hud-boss" class="panel-hud tombol-fs btn-hud-boss-shortcut" title="Lompat ke Boss Fight (B)" aria-label="Lompat ke Boss Fight"><span>⚔️ BOSS</span></button>
       <button type="button" id="btn-zoom" class="panel-hud tombol-fs" title="Perbesar Karakter / Peta (Z)" aria-label="Perbesar Tampilan"><span>🔍</span></button>
       <button type="button" id="btn-fullscreen" class="panel-hud tombol-fs" title="Layar Penuh (F)" aria-label="Layar Penuh"><span>⛶</span></button>
     </div>
@@ -177,6 +185,7 @@
     </dl>
     <div class="baris-tombol">
       <button id="btn-restart" class="tombol" type="button">RESTART</button>
+      <button id="btn-result-boss" class="tombol btn-boss-shortcut" type="button" title="Langsung lawan Boss Malakor (B)">⚔️ UJI COBA BOSS</button>
       <button id="btn-menu" class="tombol sekunder" type="button">MENU UTAMA</button>
     </div>
   </section>
